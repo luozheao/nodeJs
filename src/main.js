@@ -6,8 +6,10 @@ import router from './router'
 import  Vuex from 'vuex'
 import store from './store/store.js'
 import Api from './axios/index.js';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 Vue.prototype.$api = Api;
-
+Vue.use(ElementUI);
 Vue.use(Vuex);
 let comStore = new Vuex.Store(store);
 Vue.config.productionTip = false
