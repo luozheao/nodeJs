@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var connection=require('./sql.js');
 var crawler=require('./crawler.js');
+var crawler2=require('./crawler2.js');
 // 创建 application/x-www-form-urlencoded 编码解析
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -72,4 +73,4 @@ var server = app.listen(8088, function () {
 
 
 
-crawler(); //运行主函数
+crawler2(); //运行主函数
