@@ -1,13 +1,16 @@
-<style type="text/css">
+<style type="text/css" lang="less">
 .el-col{
   line-height: 2em;
+  &.red{
+    color:red;
+  }
 }
 </style>
 <template>
   <div  style="width:700px;margin: 0 auto;">
     <br>
       <el-row>
-        <el-col :span="4" >   姓名: </el-col>
+        <el-col :span="4"  class="red">   姓名: </el-col>
         <el-col :span="10">   <el-input v-model="name"></el-input> </el-col>
         <el-col :span="4">    <el-button type="primary" @click="submit" size="mini">提交</el-button> </el-col>
       </el-row>
