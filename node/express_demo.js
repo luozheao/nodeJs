@@ -17,9 +17,13 @@ app.get('/',function (req,res) {
 app.get('/api/login', function (req, res) {
 
 });
-app.post('/api/out',urlencodedParser,function (req,res) {
+
+/**
+ * 搜索
+ * */
+app.post('/api/selectMsg',urlencodedParser,function (req,res) {
   var  name=req.body.name;
-  var selectSql = 'select * from websites   where name=?';
+  var selectSql = name?'select * from websites   where name=?':"select * from websites";
   var params=[name];
   connection.query(selectSql ,params,function (err, result) {
     if(err){
@@ -29,10 +33,40 @@ app.post('/api/out',urlencodedParser,function (req,res) {
     res.end(JSON.stringify(result));
   });
 })
-
+/**
+ * 添加
+ * */
+app.post('/api/addMsg',urlencodedParser,function (req,res) {
+  var  name=req.body.name;
+  var selectSql = 'insert into websites(name) values(?)';
+  var params=[name];
+  connection.query(selectSql,params,function (err, result) {
+    if(err){
+      console.log(err.message);
+      return;
+    }
+    res.end(JSON.stringify(result));
+  });
+})
+/**
+ * 删除
+ * */
+app.post('/api/delMsg',urlencodedParser,function (req,res) {
+  var  name=req.body.name;
+  var selectSql = 'delete from websites where name=?';
+  var params=[name];
+  connection.query(selectSql,params,function (err, result) {
+    if(err){
+      console.log(err.message);
+      return;
+    }
+    res.end(JSON.stringify(result));
+  });
+})
 
 
 var server = app.listen(8088, function () {
   var host = server.address().address;
   var port = server.address().port;
+  console.log(server.address());
 })
