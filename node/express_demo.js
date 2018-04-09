@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var connection=require('./sql.js');
-
+var crawler=require('./crawler.js');
 // 创建 application/x-www-form-urlencoded 编码解析
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -66,7 +66,10 @@ app.post('/api/delMsg',urlencodedParser,function (req,res) {
 
 
 var server = app.listen(8088, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log(server.address());
+  // var host = server.address().address;
+  // var port = server.address().port;
 })
+
+
+
+crawler(); //运行主函数
