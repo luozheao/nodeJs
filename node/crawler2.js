@@ -59,7 +59,8 @@ function main(){
     });
 
     data.forEach(function (item) {
-         getArticle(item);
+         // getArticle(item);
+         saveImage('http:'+item.thumbnails);
     });
     // 生成数据
     // 写入数据, 文件不存在会自动创建
@@ -141,6 +142,29 @@ function getArticle(item) {
       console.log('写入完成');
     });
   });
+}
+
+//保存图片
+function saveImage(imageUrl){
+  superagent.get(imageUrl).end(function (err, res) {
+    // 抛错拦截
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    if(!fs.existsSync("./node/images")){
+      fs.mkdirSync("./node/images");
+    }
+    fs.writeFile('node/images/'+Math.random()+'.png',res.body,function (err) {
+       if(err) {
+         console.log(err)
+         return;
+       };
+    });
+  });
+
+
 }
 
 module.exports=main;
