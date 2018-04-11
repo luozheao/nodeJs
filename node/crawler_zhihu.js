@@ -1,5 +1,5 @@
 /**
- * 获取简书信息
+ * 获取知乎信息
  * */
 
 /**
@@ -156,6 +156,7 @@ function saveImage(imageUrl){
       console.log(err);
       return;
     }
+    //你好,hello
 
     if(!fs.existsSync("./node/images")){
       fs.mkdirSync("./node/images");

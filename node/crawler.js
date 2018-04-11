@@ -72,6 +72,5 @@ function getBtLink(urls, n) { //urls里面包含着所有详情页的地址
 function main() {
   console.log("开始爬取");
   getTitle(url, index);
-
 }
 module.exports=main;
