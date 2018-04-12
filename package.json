@@ -1,10 +1,10 @@
 {
   "name": "@project/nodejs-luozheao",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Vue.js project",
   "author": "luozheaoPlus <815149054@qq.com>",
   "private": false,
-  "main":"src/index.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 0.0.0.0",
     "start": "npm run dev",
