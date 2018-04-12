@@ -68,7 +68,8 @@ app.post('/api/delMsg',urlencodedParser,function (req,res) {
 
 var server = app.listen(8088, function () {
   // var host = server.address().address;
-  // var port = server.address().port;
+  //  var port = server.address().port;
+  console.log('hello world !');
 })
 
 
