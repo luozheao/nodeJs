@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var connection=require('./sql.js');
-var crawler=require('./crawler.js');
-var crawler2=require('./crawler2.js');
+var crawler=require('./crawlerFile/crawler.js');
+var crawler2=require('./crawlerFile/crawler2.js');
 // 创建 application/x-www-form-urlencoded 编码解析
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 

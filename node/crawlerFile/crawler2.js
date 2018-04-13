@@ -1,5 +1,5 @@
 /**
- * 获取知乎信息
+ * 获取简书信息
  * */
 
 /**
@@ -78,9 +78,6 @@ function main(){
       };
       console.log('写入列表完成');
     });
-
-
-
   });
 }
 
@@ -156,7 +153,6 @@ function saveImage(imageUrl){
       console.log(err);
       return;
     }
-    //你好,hello
 
     if(!fs.existsSync("./node/images")){
       fs.mkdirSync("./node/images");
