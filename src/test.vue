@@ -3,7 +3,10 @@
 </style>
 <template>
   <div id="test">
-           <div v-for="p in arr">{{p}}</div>
+
+      <slot name="header"></slot>
+      <slot></slot>
+      <slot name="footer"></slot>
   </div>
 </template>
 
@@ -18,14 +21,10 @@ export default {
       }
    },
   computed:{
-    arr(){
-      return this.$store.state.arr;
-    }
+
   },
   watch:{
-    arr(newArr){
-        console.log(newArr);
-    }
+
   },
   methods:{
 

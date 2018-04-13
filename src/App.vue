@@ -21,11 +21,14 @@
 
 import  test from './test.vue';
 
+
 export default {
     components:{test},
     data(){
       return{
-
+          tag:true,
+        dataArr:[],
+          comWrap:null,
       }
    },
    name:'luozheao',
@@ -34,8 +37,11 @@ export default {
 
      },
    },
+  created(){
 
+  },
   mounted(){
+
 
   },
   beforeRouteEnter(to,from,next){
