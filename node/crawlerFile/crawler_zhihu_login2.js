@@ -9,76 +9,43 @@ let article = ''
   , title = ''
 
 const base_headers = {
-  Accept: '*/*',
-  'Accept-Encoding':'gzip, deflate',
-  'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2',
-  'Cache-Control':'no-cache',
-  Connection:'keep-alive',
-  DNT:1,
-  Host:'segmentfault.com',
-  Origin: 'http://segmentfault.com',
-  Pragma:'no-cache',
-  Referer: 'http://segmentfault.com/',
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36',
-  'X-Requested-With': 'XMLHttpRequest'}
-  , origin = 'http://segmentfault.com'
-  , urls = {
-  origin,
-  login: `${origin}/api/user/login`,
-  write: `${origin}/write?freshman=1`,
-  draft: `${origin}/api/article/draft/save`,
-  tag: `${origin}/api/tags/search`,
-  blog: `${origin}/api/articles/add` }
-  , conf = {
-  "mail": "17099913401",
-  "password": "luojie123",
-  "remember": 1
+  'accept': '*/*',
+  'Accept-Encoding': 'gzip, deflate',
+  'Accept-Language': 'zh-CN,zh;q=0.9',
+  'authorization': 'oauth c3cef7c66a1843f8b3a9e6a1e3160e20',
+  'Connection': 'keep-alive',
+   'Content-Length': 2232,
+  'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryhpGguj9HpEAJDA6c',
+  'Host': 'www.zhihu.com',
+  'Origin': 'https://www.zhihu.com',
+  'Referer': 'https://www.zhihu.com/signup',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
+  'X-UDID': 'AOCvwW15dA2PThXnk8bZNd17aOZCimlmBTo=',
+  'X-Xsrftoken': '0c776894-cfa7-4dba-9408-28879ae755c5',
 }
 
-let cookie
-
-function getToken(s) {
-  let $ = cheerio.load(s);
-  let text = "";
-
-  for (var i = 0; i < $('body script').length; i++) {
-    var jsss = $('body script')[i];
-    if (!jsss.attribs.src && !jsss.attribs.id) {
-      if (jsss.children[0].data.indexOf('token') >= 0) {
-        text = jsss.children[0].data;
-      }
-    }
+  var conf = {
+    "username": "17099913401",
+    "password": "luojie123"
   }
-  let fn = new Function('window', text + ';return window.SF.token');
-  let token = fn({});
-
-  $ = null
-  return token
-}
-
-function login(res) {
-  let token = getToken(res.text)
-
-  cookie = res.headers['set-cookie'].join(',').match(/(PHPSESSID=.+?);/)[1]
-
-  req
-    .post(urls.login)
-    .query({'_': token})
-    .set(base_headers)
-    .set('Cookie', cookie)
-    .type('form')
-    .send(conf)
-    .redirects(0)
-    .end((err, res) => {
-         console.log(err);
-    })
-}
 
 
-req
-  .get(urls.origin)
+   req
+  .get('https://www.zhihu.com/#signin')
   .end((err, res) => {
-    login(res);
+
+    let cookie=  res.headers['set-cookie'].join(',')
+    req
+        .post('https://www.zhihu.com/api/v3/oauth/sign_in')
+        .set(base_headers)
+        .set('Cookie',cookie)
+        .type('form')
+        .send(conf)
+        .redirects(0)
+      .end((err, res) => {
+          console.log(err,456);
+          console.log(res,789);
+      })
   })
 
 
