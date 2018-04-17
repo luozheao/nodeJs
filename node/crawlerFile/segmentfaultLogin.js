@@ -63,8 +63,8 @@ function getToken(s) {
 
 
 function login(res) {
-  let token ='11141d5382fc103e7696debf124184e2';// getToken(res.text);//'11141d5382fc103e7696debf124184e2';//;
-  let cookie ='PHPSESSID=web1~2vkv0uob2cl4a8qe25p5etgm7v';//res.headers['set-cookie'].join(',').match(/(PHPSESSID=.+?);/)[1]; //'PHPSESSID=web1~2vkv0uob2cl4a8qe25p5etgm7v;' //;
+  let token =getToken(res.text);
+  let cookie =res.headers['set-cookie'].join(';');
    req
      .post('https://segmentfault.com/api/user/login')
      .set(base_headers)
@@ -76,10 +76,11 @@ function login(res) {
     .send(conf)
     // .redirects(0)
     .end((err, res) => {
-         //console.log(err,res.text);
+
       req
         .post('https://segmentfault.com/u/luoshengmen')
         .set(base_headers)
+        .set('Cookie', cookie)
         .type('form')
         .end((err, res) => {
              console.log(err,res.text);
