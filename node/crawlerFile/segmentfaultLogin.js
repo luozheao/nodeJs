@@ -4,7 +4,8 @@ var http = require('http')
 var url = require('url');
 var async = require('async')
 
-
+var fs = require("fs");
+var request = require('request');
 
 let origin = 'https://segmentfault.com/user/login'; //'https://segmentfault.com/user/login'//'http://segmentfault.com/'
 
@@ -88,5 +89,14 @@ function login(res) {
 
     })
 }
+
+
+
+req
+  .get(urls.mainpage)
+  .end((err, res) => {
+    login(res);
+  })
+
 
 

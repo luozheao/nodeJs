@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
   var fetchUrl = function (offset, callback) {
 
     var baseUrl = 'https://www.zhihu.com/node/ExploreAnswerListV2';// 'http://www.zhihu.com/node/ExploreAnswerListV2'
-    console.log(offset);
+
     var params = {
       'offset': offset,
       'type': 'day'
