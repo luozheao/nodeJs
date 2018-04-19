@@ -16,24 +16,56 @@ var msg={
 var cookie2;
 var formhash;
 var booksArr=[];
+let msgArr=[
+  {
+    username:'ϾZHI',
+    password:'luojie123'
+  },
+  {
+    username:'luozheao',
+    password:'luojie123'
+  },
+  {
+    username:'luozheao1',
+    password:'luojie123'
+  },
+  {
+    username:'luozheao2',
+    password:'luojie123'
+  } ,
+  {
+    username:'luoshengmen',
+    password:'luojie123'
+  } ,
+]
 
- start()
-   .then(login)
-   .then(getHtml)
-   .then((res)=>{
-       //获取言情小说
-       loveBook(res)
-       .then(getJumpLink)
-       .then(realLink)
-       .then(saveBook);
-      //签到
-      // sign(res);
-   });
+
+async.mapLimit(msgArr,1, function (p, callback) {
+    start(p)
+      .then(login)
+      .then(getHtml)
+      .then((res)=>{
+        //获取言情小说
+        // loveBook(res)
+        //   .then(getJumpLink)
+        //   .then(realLink)
+        //   .then(saveBook);
+        //签到
+        sign(res).then((text)=>{
+          callback(null,'ok')
+        });
+      });
+  },
+  function (err, result) {
+    console.log(err,result)
+  });
+
+
+
 
 
 //登录页
-function  start() {
-
+function  start(pMsg) {
   return new Promise((resolve,reject)=>{
      req
       .get('https://www.shukuai.org/member.php')
@@ -43,13 +75,22 @@ function  start() {
           console.log('start error');
           return;
         }
-        resolve(res)
+        if(pMsg){
+          resolve([res,pMsg])
+        }else{
+          resolve(res)
+        }
       })
   })
 }
 //登录
 function login(res) {
+  let batchMsg=msg;
+  if(Array.isArray(res)){
+    batchMsg=res[1];
+  }
   return new Promise((resolve,reject)=>{
+   console.log(batchMsg);
     req
       .post('https://www.shukuai.org/member.php')
       .charset('gbk')
@@ -67,7 +108,7 @@ function login(res) {
       })
       .type('form')
       .query("mod=logging&action=login&loginsubmit=yes&inajax=1")
-      .send(msg)
+      .send(batchMsg)
       .end((err, res) => {
         if(err){
           console.log('login error');
@@ -150,12 +191,16 @@ function sign(res){
           console.log('sign error');
           return;
         }
+        let $ = cheerio.load(res.text);
         if(!err){
-          console.log(res.text);
+          console.log($('root').text().replace(/\n/gi,""));
         }
+        resolve($('root').text());
       })
   });
 }
+
+
 
 //获取言情小说
 function loveBook() {
@@ -194,7 +239,7 @@ function loveBook() {
           //第一步获取页面链接
           for(var i=0;i<len;i++){
             var name=obj[i].children[0].data;
-            if(name.indexOf('-06')>=0){
+            if(name.indexOf('-'+new Date().getDate())>=0){
               booksArr.push({
                 name:name,
                 href:obj[i].attribs.href,
