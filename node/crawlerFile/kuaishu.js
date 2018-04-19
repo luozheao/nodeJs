@@ -6,9 +6,11 @@ var req = charset(require('superagent'));
 var cheerio = require('cheerio')
 var http = require('http')
 var request = require('request');
+var bodyParser = require('body-parser');
 var url = require('url');
 var async = require('async')
 var fs = require('fs');
+
 var msg={
   username:'ϾZHI',
   password:'luojie123'
@@ -38,30 +40,59 @@ let msgArr=[
     password:'luojie123'
   } ,
 ]
+let signMsg=[];
 
+app.use(express.static('static'))
+app.use(express.static('build'))
+app.use(express.static('dist'))
 
-async.mapLimit(msgArr,1, function (p, callback) {
-    start(p)
-      .then(login)
-      .then(getHtml)
-      .then((res)=>{
-        //获取言情小说
-        // loveBook(res)
-        //   .then(getJumpLink)
-        //   .then(realLink)
-        //   .then(saveBook);
-        //签到
-        sign(res).then((text)=>{
-          callback(null,'ok')
+app.get('/',function (req,res) {
+   res.end('index.html');
+})
+app.get('/api/sign', function (req, res) {
+  signMsg=[];
+  async.mapLimit(msgArr,1, function (p, callback) {
+      start(p)
+        .then(login)
+        .then(getHtml)
+        .then((res)=>{
+          //获取言情小说
+          // loveBook(res)
+          //   .then(getJumpLink)
+          //   .then(realLink)
+          //   .then(saveBook);
+          //签到
+          sign(res).then((text)=>{
+            callback(null,'ok')
+          });
         });
-      });
-  },
-  function (err, result) {
-    console.log(err,result)
-  });
+    },
+    function (err, result) {
+      console.log(err,result);
+      res.end(JSON.stringify(signMsg));
+    });
+});
+app.get('/api/getTodayLoveBook', function (req, res) {
 
+  async.mapLimit([msgArr[0]],1, function (p, callback) {
+      start(p)
+        .then(login)
+        .then(getHtml)
+        .then((res)=>{
+          //获取言情小说
+          loveBook(res)
+            .then(getJumpLink)
+            .then(realLink).then((item)=>{
+               callback(null,item)
+          });
+        });
+    },
+    function (err, items) {
+        console.log(items);
+        res.end(JSON.stringify(items[0]));
+    });
 
-
+});
 
 
 //登录页
@@ -193,7 +224,10 @@ function sign(res){
         }
         let $ = cheerio.load(res.text);
         if(!err){
-          console.log($('root').text().replace(/\n/gi,""));
+          let str=$('root').text().replace(/\n/gi,"");
+          console.log(str);
+          var pattern1 = /[\u4e00-\u9fa5]+/g;
+          signMsg.push(str.match(pattern1).join(','));
         }
         resolve($('root').text());
       })
@@ -239,7 +273,8 @@ function loveBook() {
           //第一步获取页面链接
           for(var i=0;i<len;i++){
             var name=obj[i].children[0].data;
-            if(name.indexOf('-'+new Date().getDate())>=0){
+            // if(name.indexOf('-'+new Date().getDate())>=0){
+            if(name.indexOf('-222')>=0){
               booksArr.push({
                 name:name,
                 href:obj[i].attribs.href,
@@ -280,7 +315,6 @@ function getJumpLink(booksArr){
         if(!err){
           let $ = cheerio.load(res.text);
           booksArrObj.downLink= $('.attnm a').attr('href')
-          // if(booksArrObj.name.indexOf('-'+new Date().getDate())>=0){
           callback(null,booksArrObj);
         }
       })
@@ -333,8 +367,6 @@ function realLink(booksArr) {
         })
     }, function (err, result) {
       console.log(err,result);
-
-
        resolve(result);
     });
   });
@@ -355,12 +387,7 @@ function saveBook(result){
 
 
 
-// app.get('/',function (req,res) {
-//   res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-//   res.end(JSON.stringify({a:'罗哲傲',b:2}));
-// })
-// var server = app.listen(8088, function () {
-//   // var host = server.address().address;
-//   //  var port = server.address().port;
-//    console.log('hello world !');
-// })
+
+var server = app.listen(8088, function () {
+   console.log('hello world !');
+})
