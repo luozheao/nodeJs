@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var app = express();
 var iconv = require('iconv-lite');
 var charset = require('superagent-charset');
@@ -74,7 +74,7 @@ app.get('/api/sign', function (req, res) {
 });
 app.get('/api/getTodayLoveBook', function (req, res) {
 
-  async.mapLimit([msgArr[0]],1, function (p, callback) {
+  async.mapLimit([msgArr[1]],1, function (p, callback) {
       start(p)
         .then(login)
         .then(getHtml)
@@ -273,8 +273,8 @@ function loveBook() {
           //第一步获取页面链接
           for(var i=0;i<len;i++){
             var name=obj[i].children[0].data;
-            // if(name.indexOf('-'+new Date().getDate())>=0){
-            if(name.indexOf('-222')>=0){
+            if(name.indexOf('-'+new Date().getDate())>=0){
+            
               booksArr.push({
                 name:name,
                 href:obj[i].attribs.href,
