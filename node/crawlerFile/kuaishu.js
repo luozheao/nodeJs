@@ -50,17 +50,15 @@ app.get('/',function (req,res) {
    res.end('index.html');
 })
 app.get('/api/sign', function (req, res) {
+  toSign();
+});
+function toSign(){
   signMsg=[];
   async.mapLimit(msgArr,1, function (p, callback) {
       start(p)
         .then(login)
         .then(getHtml)
         .then((res)=>{
-          //获取言情小说
-          // loveBook(res)
-          //   .then(getJumpLink)
-          //   .then(realLink)
-          //   .then(saveBook);
           //签到
           sign(res).then((text)=>{
             callback(null,'ok')
@@ -71,7 +69,7 @@ app.get('/api/sign', function (req, res) {
       console.log(err,result);
       res.end(JSON.stringify(signMsg));
     });
-});
+};
 app.get('/api/getTodayLoveBook', function (req, res) {
 
   async.mapLimit([msgArr[1]],1, function (p, callback) {
@@ -235,7 +233,6 @@ function sign(res){
 }
 
 
-
 //获取言情小说
 function loveBook() {
   return new Promise((resolve,reject)=>{
@@ -274,7 +271,7 @@ function loveBook() {
           for(var i=0;i<len;i++){
             var name=obj[i].children[0].data;
             if(name.indexOf('-'+new Date().getDate())>=0){
-            
+
               booksArr.push({
                 name:name,
                 href:obj[i].attribs.href,
@@ -385,9 +382,9 @@ function saveBook(result){
 
 
 
-
-
-
 var server = app.listen(8080, function () {
+   setInterval(()=>{
+     toSign();
+   },1000*60*60*24);//每隔24小时签到一次
    console.log('hello world !');
 })
