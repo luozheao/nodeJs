@@ -50,9 +50,9 @@ app.get('/',function (req,res) {
    res.end('index.html');
 })
 app.get('/api/sign', function (req, res) {
-  toSign();
+  toSign(res);
 });
-function toSign(){
+function toSign(res){
   signMsg=[];
   async.mapLimit(msgArr,1, function (p, callback) {
       start(p)
