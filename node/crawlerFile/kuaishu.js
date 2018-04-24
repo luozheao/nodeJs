@@ -91,10 +91,10 @@ app.get('/api/getTodayLoveBook', function (req, res) {
 function getSaveBooksName(res) {
   //第一步，获取文件名
   var saveBooks=[];
-  var path="../books";
+  var path="./node/books";
   fs.readdir(path, function(err,files){
     if(err){
-      console.log("文件不存在");
+      console.log("文件不存在",err);
       return;
     }
 
