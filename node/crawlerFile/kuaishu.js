@@ -86,12 +86,13 @@ function toSign(res){
     });
 };
 app.get('/api/getTodayLoveBook', function (req, res) {
-  getSaveBooksName(res);
+  getSaveBooksName(res,req);
 });
-function getSaveBooksName(res) {
+function getSaveBooksName(res,req) {
   //第一步，获取文件名
   var saveBooks=[];
-  var path="./node/books";
+  console.log(req.hostname)
+  var path=req.hostname.includes(127)? "../books":"./node/books";
   fs.readdir(path, function(err,files){
     if(err){
       console.log("文件不存在",err);
