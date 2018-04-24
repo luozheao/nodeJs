@@ -67,7 +67,9 @@ function toSign(res){
     },
     function (err, result) {
       console.log(err,result);
-      res.end(JSON.stringify(signMsg));
+      if(res){
+        res.end(JSON.stringify(signMsg));
+      }
     });
 };
 app.get('/api/getTodayLoveBook', function (req, res) {
