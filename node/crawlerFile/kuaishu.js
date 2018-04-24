@@ -47,7 +47,7 @@ app.use(express.static('build'))
 app.use(express.static('dist'))
 
 app.get('/',function (req,res) {
-   res.end('index.html');
+   res.end('logo.png');
 })
 app.get('/api/sign', function (req, res) {
   toSign(res);
@@ -92,6 +92,13 @@ app.get('/api/getTodayLoveBook', function (req, res) {
         res.end(JSON.stringify(items[0]));
     });
 
+});
+
+
+//下载书籍
+app.get('/api/download',function(req,res){
+  res.download('../books/','《赢》杰克_韦尔奇.pdf');
+  res.end(JSON.stringify('haha'));
 });
 
 
@@ -233,7 +240,6 @@ function sign(res){
       })
   });
 }
-
 
 //获取言情小说
 function loveBook() {
@@ -381,6 +387,9 @@ function saveBook(result){
       .pipe(fs.createWriteStream('../books/'+item.name+'.rar'));
   })
 }
+
+
+
 
 
  //test

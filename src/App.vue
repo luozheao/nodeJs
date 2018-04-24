@@ -49,8 +49,10 @@
       <el-col :span="24">
         <el-button type="success" @click="sign">签到</el-button>
         <el-button type="warning" @click="getTodayLoveBook">获取当日小说</el-button>
+        <el-button type="warning" @click="downloadBook">下载</el-button>
       </el-col>
     </el-row>
+
     <br>
     <el-row>
       <el-col :span="24">
@@ -89,6 +91,13 @@
         this.$api.get('/api/sign', "", response => {
           if (response.status == 200) {
             this.signMsg = response.data;
+          }
+        });
+      },
+      downloadBook(){
+        this.$api.get('/api/download', "", response => {
+          if (response.status == 200) {
+              console.log(response);
           }
         });
       },
