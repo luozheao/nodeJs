@@ -384,7 +384,7 @@ function saveBook(result){
 
 
  //test
-var server = app.listen(8080, function () {
+var server = app.listen(8088, function () {
    setInterval(()=>{
      toSign();
    },1000*60*60*24);//每隔24小时签到一次
