@@ -54,7 +54,8 @@ app.get('/api/download', function (req, res) {
     "Content-type":"application/octet-stream",
     'Content-Disposition': "attachment;filename*=UTF-8 ''"+urlencode(name)+'.rar'
   });
-  var fReadStream = fs.createReadStream('../books/'+name);
+  var path=req.hostname.includes(127)? "../books/":"./node/books/";
+  var fReadStream = fs.createReadStream(path+name);
   fReadStream.on("data",function(chunk){res.write(chunk,"binary")});
   fReadStream.on("end",function () {
     res.end();
