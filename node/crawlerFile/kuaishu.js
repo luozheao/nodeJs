@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var url = require('url');
 var async = require('async')
 var fs = require('fs');
+var urlencode = require('urlencode');
 
 var msg={
   username:'ϾZHI',
@@ -46,9 +47,21 @@ app.use(express.static('static'))
 app.use(express.static('build'))
 app.use(express.static('dist'))
 
-app.get('/',function (req,res) {
-   res.end('index.html');
+
+app.get('/api/download', function (req, res) {
+  var name=req.query.name;
+  res.set({
+    "Content-type":"application/octet-stream",
+    'Content-Disposition': "attachment;filename*=UTF-8 ''"+urlencode(name)+'.rar'
+  });
+  var fReadStream = fs.createReadStream('../books/'+name);
+  fReadStream.on("data",function(chunk){res.write(chunk,"binary")});
+  fReadStream.on("end",function () {
+    res.end();
+  });
 })
+
+
 app.get('/api/sign', function (req, res) {
   toSign(res);
 });
@@ -73,27 +86,52 @@ function toSign(res){
     });
 };
 app.get('/api/getTodayLoveBook', function (req, res) {
+  getSaveBooksName(res);
+});
+function getSaveBooksName(res) {
+  //第一步，获取文件名
+  var saveBooks=[];
+  var path="../books";
+  fs.readdir(path, function(err,files){
+    if(err){
+      console.log("文件不存在");
+      return;
+    }
 
-  async.mapLimit([msgArr[1]],1, function (p, callback) {
+    for(var i=files.length-1;i>=0;i--){
+      saveBooks.push({
+        name:files[i],
+        realDownLink:files[i]
+      })
+    }
+
+    //第二步，返回
+    res.end(JSON.stringify(saveBooks));
+  });
+}
+function toGetTodayLoveBook(res) {
+  var index=new Date().getDate()%5;
+  async.mapLimit([msgArr[index]],1, function (p, callback) {
       start(p)
         .then(login)
         .then(getHtml)
         .then((res)=>{
           //获取言情小说
-          loveBook(res)
+            loveBook(res)
             .then(getJumpLink)
             .then(realLink).then((item)=>{
-               callback(null,item)
+              callback(null,item)
           });
         });
     },
     function (err, items) {
-        console.log(items);
+       console.log(items);
+       saveBook(items[0]);
+      if(res){
         res.end(JSON.stringify(items[0]));
+      }
     });
-
-});
-
+}
 
 //登录页
 function  start(pMsg) {
@@ -272,8 +310,7 @@ function loveBook() {
           //第一步获取页面链接
           for(var i=0;i<len;i++){
             var name=obj[i].children[0].data;
-            if(name.indexOf('-'+new Date().getDate())>=0){
-
+            if(name.indexOf('-'+new Date().getDate()+'版推')>=0){
               booksArr.push({
                 name:name,
                 href:obj[i].attribs.href,
@@ -383,10 +420,18 @@ function saveBook(result){
 }
 
 
- //test
 var server = app.listen(8088, function () {
    setInterval(()=>{
-     toSign();
-   },1000*60*60*24);//每隔24小时签到一次
+     toSign();//每隔24小时签到一次
+     console.log(new Date().getHours()+'点签到成功')
+   },1000*60*60*12);
+  setInterval(()=>{
+    if(new Date().getHours()==12){
+      toGetTodayLoveBook();//每隔1小时获取书籍
+      console.log(new Date().getHours()+'点获取书籍成功')
+    }
+  },1000*60*60*1);
    console.log('hello world !');
 })
+
+
