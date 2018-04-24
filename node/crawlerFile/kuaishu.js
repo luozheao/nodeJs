@@ -54,7 +54,7 @@ app.get('/api/download', function (req, res) {
     "Content-type":"application/octet-stream",
     'Content-Disposition': "attachment;filename*=UTF-8 ''"+urlencode(name)+'.rar'
   });
-  var path=req.hostname.includes(127)? "../books/":"./node/books/";
+  var path="../books";
   var fReadStream = fs.createReadStream(path+name);
   fReadStream.on("data",function(chunk){res.write(chunk,"binary")});
   fReadStream.on("end",function () {
@@ -93,7 +93,7 @@ function getSaveBooksName(res,req) {
   //第一步，获取文件名
   var saveBooks=[];
   console.log(req.hostname)
-  var path=req.hostname.includes(127)? "../books":"./node/books";
+  var path="../books";
   fs.readdir(path, function(err,files){
     if(err){
       console.log("文件不存在",err);
