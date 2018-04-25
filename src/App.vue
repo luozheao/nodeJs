@@ -63,7 +63,7 @@
       <el-col :span="24">
         <div class="toLeft font32">今日书籍信息：</div>
         <div v-show="showMsg" class="center font28">{{this.msg}}</div>
-        <div v-for="item in loveBooks" class="font18 red"><a :href="item.realDownLink">{{item.name}} {{
+        <div v-for="item in loveBooks" class="font18 red"><a :href="'/api/download?name='+item.realDownLink">{{item.name}} {{
           item.realDownLink?"":"(您的书币不足)"
           }} </a></div>
       </el-col>
