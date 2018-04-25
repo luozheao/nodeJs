@@ -1,16 +1,17 @@
 ﻿var express = require('express');
 var app = express();
-var iconv = require('iconv-lite');
-var charset = require('superagent-charset');
-var req = charset(require('superagent'));
-var cheerio = require('cheerio')
-var http = require('http')
+var charset = require('superagent-charset');//解析编码
+var req = charset(require('superagent'));//是个 http 方面的库，可以发起 get 或 post 请求。
+var cheerio = require('cheerio'); //Node.js 版的 jquery
 var request = require('request');
-var bodyParser = require('body-parser');
-var url = require('url');
 var async = require('async')
 var fs = require('fs');
-var urlencode = require('urlencode');
+// var urlencode = require('urlencode');
+var bodyParser = require('body-parser');
+var url = require('url');
+
+var http = require('http')
+var iconv = require('iconv-lite');//解析编码,配合http使用:iconv+http
 
 var msg={
   username:'ϾZHI',
@@ -56,10 +57,11 @@ app.get('/api/download', function (req, res) {
   });
   var path=req.hostname.includes(127)? "../books/":"./node/books/";
   var fReadStream = fs.createReadStream(path+name);
-  fReadStream.on("data",function(chunk){res.write(chunk,"binary")});
-  fReadStream.on("end",function () {
-    res.end();
-  });
+  // fReadStream.on("data",function(chunk){res.write(chunk,"binary")});
+  // fReadStream.on("end",function () {
+  //   res.end();
+  // });
+    fReadStream.pipe(res)
 })
 
 

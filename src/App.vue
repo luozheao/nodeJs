@@ -49,7 +49,6 @@
       <el-col :span="24">
         <el-button type="success" @click="sign">签到</el-button>
         <el-button type="warning" @click="getTodayLoveBook">获取当日小说</el-button>
-        <el-button type="warning" @click="downloadBook">下载</el-button>
       </el-col>
     </el-row>
 
@@ -94,13 +93,7 @@
           }
         });
       },
-      downloadBook(){
-        this.$api.get('/api/download', "", response => {
-          if (response.status == 200) {
-              console.log(response);
-          }
-        });
-      },
+
       getTodayLoveBook() {
         this.loveBooks=[];
         this.showMsg=true;
@@ -108,7 +101,6 @@
         this.$api.get('/api/getTodayLoveBook', "", response => {
           if (response.status == 200) {
             this.loveBooks = response.data;
-
             if(this.loveBooks.length==0){
               this.msg="今日没有可下载书籍";
             }else{
