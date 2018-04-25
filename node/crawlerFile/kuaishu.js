@@ -52,7 +52,7 @@ app.get('/api/download', function (req, res) {
   var name=req.query.name;
   res.set({
     "Content-type":"application/octet-stream",
-    'Content-Disposition': "attachment;filename*=UTF-8 ''"+urlencode(name)
+    'Content-Disposition': "attachment;filename=book.rar"
   });
   var path=req.hostname.includes(127)? "../books/":"./node/books/";
   var fReadStream = fs.createReadStream(path+name);
