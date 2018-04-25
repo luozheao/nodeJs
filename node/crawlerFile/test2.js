@@ -28,14 +28,20 @@ JSMENU['active'] = [];
 JSMENU['timer'] = [];
 JSMENU['drag'] = [];
 JSMENU['layer'] = 0;
-JSMENU['zIndex'] = {'win': 200, 'menu': 300, 'dialog': 400, 'prompt': 500};
+JSMENU['zIndex'] = {
+  'win': 200,
+  'menu': 300,
+  'dialog': 400,
+  'prompt': 500
+};
 JSMENU['float'] = '';
 var CURRENTSTYPE = null;
 var discuz_uid = isUndefined(discuz_uid) ? 0 : discuz_uid;
 var creditnotice = isUndefined(creditnotice) ? '' : creditnotice;
 var cookiedomain = isUndefined(cookiedomain) ? '' : cookiedomain;
 var cookiepath = isUndefined(cookiepath) ? '' : cookiepath;
-var EXTRAFUNC = [], EXTRASTR = '';
+var EXTRAFUNC = []
+  , EXTRASTR = '';
 EXTRAFUNC['showmenu'] = [];
 var DISCUZCODE = [];
 DISCUZCODE['num'] = '-1';
@@ -74,7 +80,8 @@ if (BROWSER.firefox && window.HTMLElement) {
     var str = '<' + this.tagName.toLowerCase();
     for (var i = 0; i < attrs.length; i++) {
       attr = attrs[i];
-      if (attr.specified) str += ' ' + attr.name + '="' + attr.value + '"';
+      if (attr.specified)
+        str += ' ' + attr.name + '="' + attr.value + '"';
     }
     if (!this.canHaveChildren) {
       return str + '>';
@@ -124,7 +131,8 @@ function $C(classname, ele, tag) {
   } else {
     eles = ele.getElementsByTagName(tag);
     var pattern = new RegExp("(^|\\s)" + classname + "(\\s|$)");
-    for (i = 0, L = eles.length; i < L; i++) {
+    for (i = 0,
+           L = eles.length; i < L; i++) {
       if (pattern.test(eles[i].className)) {
         returns.push(eles[i]);
       }
@@ -169,12 +177,13 @@ function browserVersion(types) {
 }
 
 function getEvent() {
-  if (document.all) return window.event;
+  if (document.all)
+    return window.event;
   func = getEvent.caller;
   while (func != null) {
     var arg0 = func.arguments[0];
     if (arg0) {
-      if ((arg0.constructor == Event || arg0.constructor == MouseEvent) || (typeof(arg0) == "object" && arg0.preventDefault && arg0.stopPropagation)) {
+      if ((arg0.constructor == Event || arg0.constructor == MouseEvent) || (typeof (arg0) == "object" && arg0.preventDefault && arg0.stopPropagation)) {
         return arg0;
       }
     }
@@ -303,14 +312,18 @@ function Ajax(recvType, waitId) {
   aj.sendString = '';
   aj.targetUrl = '';
   aj.setLoading = function (loading) {
-    if (typeof loading !== 'undefined' && loading !== null) aj.loading = loading;
-  };
+    if (typeof loading !== 'undefined' && loading !== null)
+      aj.loading = loading;
+  }
+  ;
   aj.setRecvType = function (recvtype) {
     aj.recvType = recvtype;
-  };
+  }
+  ;
   aj.setWaitId = function (waitid) {
     aj.waitId = typeof waitid == 'object' ? waitid : $(waitid);
-  };
+  }
+  ;
   aj.createXMLHttpRequest = function () {
     var request = false;
     if (window.XMLHttpRequest) {
@@ -331,14 +344,16 @@ function Ajax(recvType, waitId) {
       }
     }
     return request;
-  };
+  }
+  ;
   aj.XMLHttpRequest = aj.createXMLHttpRequest();
   aj.showLoading = function () {
     if (aj.waitId && (aj.XMLHttpRequest.readyState != 4 || aj.XMLHttpRequest.status != 200)) {
       aj.waitId.style.display = '';
       aj.waitId.innerHTML = '<span><img src="' + IMGDIR + '/loading.gif" class="vm"> ' + aj.loading + '</span>';
     }
-  };
+  }
+  ;
   aj.processHandle = function () {
     if (aj.XMLHttpRequest.readyState == 4 && aj.XMLHttpRequest.status == 200) {
       if (aj.waitId) {
@@ -362,7 +377,8 @@ function Ajax(recvType, waitId) {
         aj.resultHandle(s, aj);
       }
     }
-  };
+  }
+  ;
   aj.get = function (targetUrl, resultHandle) {
     targetUrl = hostconvert(targetUrl);
     setTimeout(function () {
@@ -381,7 +397,8 @@ function Ajax(recvType, waitId) {
       aj.XMLHttpRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       aj.XMLHttpRequest.send();
     }
-  };
+  }
+  ;
   aj.post = function (targetUrl, sendString, resultHandle) {
     targetUrl = hostconvert(targetUrl);
     setTimeout(function () {
@@ -395,15 +412,18 @@ function Ajax(recvType, waitId) {
     aj.XMLHttpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     aj.XMLHttpRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     aj.XMLHttpRequest.send(aj.sendString);
-  };
+  }
+  ;
   aj.getJSON = function (targetUrl, resultHandle) {
     aj.setRecvType('JSON');
     aj.get(targetUrl + '&ajaxdata=json', resultHandle);
-  };
+  }
+  ;
   aj.getHTML = function (targetUrl, resultHandle) {
     aj.setRecvType('HTML');
     aj.get(targetUrl + '&ajaxdata=html', resultHandle);
-  };
+  }
+  ;
   return aj;
 }
 
@@ -421,7 +441,8 @@ function getHost(url) {
 }
 
 function hostconvert(url) {
-  if (!url.match(/^https?:\/\//)) url = SITEURL + url;
+  if (!url.match(/^https?:\/\//))
+    url = SITEURL + url;
   var url_host = getHost(url);
   var cur_host = getHost().toLowerCase();
   if (url_host && cur_host != url_host) {
@@ -432,7 +453,8 @@ function hostconvert(url) {
 
 function newfunction(func) {
   var args = [];
-  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  for (var i = 1; i < arguments.length; i++)
+    args.push(arguments[i]);
   return function (event) {
     doane(event);
     window[func].apply(window, args);
@@ -441,7 +463,8 @@ function newfunction(func) {
 }
 
 function evalscript(s) {
-  if (s.indexOf('<script') == -1) return s;
+  if (s.indexOf('<script') == -1)
+    return s;
   var p = /<script[^\>]*?>([^\x00]*?)<\/script>/ig;
   var arr = [];
   while (arr = p.exec(s)) {
@@ -459,7 +482,8 @@ function evalscript(s) {
   return s;
 }
 
-var safescripts = {}, evalscripts = [];
+var safescripts = {}
+  , evalscripts = [];
 
 function safescript(id, call, seconds, times, timeoutcall, endcall, index) {
   seconds = seconds || 1000;
@@ -478,7 +502,8 @@ function safescript(id, call, seconds, times, timeoutcall, endcall, index) {
     if (!safescripts[id] || !index) {
       safescripts[id] = safescripts[id] || [];
       safescripts[id].push({
-        'times': 0, 'si': setInterval(function () {
+        'times': 0,
+        'si': setInterval(function () {
           safescript(id, call, seconds, times, timeoutcall, endcall, safescripts[id].length);
         }, seconds)
       });
@@ -512,7 +537,8 @@ function safescript(id, call, seconds, times, timeoutcall, endcall, index) {
 
 function $F(func, args, script) {
   var run = function () {
-    var argc = args.length, s = '';
+    var argc = args.length
+      , s = '';
     for (i = 0; i < argc; i++) {
       s += ',args[' + i + ']';
     }
@@ -544,7 +570,8 @@ function $F(func, args, script) {
 
 function appendscript(src, text, reload, charset) {
   var id = hash(src + text);
-  if (!reload && in_array(id, evalscripts)) return;
+  if (!reload && in_array(id, evalscripts))
+    return;
   if (reload && $(id)) {
     $(id).parentNode.removeChild($(id));
   }
@@ -560,13 +587,15 @@ function appendscript(src, text, reload, charset) {
       scriptNode.onload = function () {
         scriptNode.onloadDone = true;
         JSLOADED[src] = 1;
-      };
+      }
+      ;
       scriptNode.onreadystatechange = function () {
         if ((scriptNode.readyState == 'loaded' || scriptNode.readyState == 'complete') && !scriptNode.onloadDone) {
           scriptNode.onloadDone = true;
           JSLOADED[src] = 1;
         }
-      };
+      }
+      ;
     } else if (text) {
       scriptNode.text = text;
     }
@@ -591,7 +620,8 @@ function ajaxupdateevents(obj, tagName) {
 function ajaxupdateevent(o) {
   if (typeof o == 'object' && o.getAttribute) {
     if (o.getAttribute('ajaxtarget')) {
-      if (!o.id) o.id = Math.random();
+      if (!o.id)
+        o.id = Math.random();
       var ajaxevent = o.getAttribute('ajaxevent') ? o.getAttribute('ajaxevent') : 'click';
       var ajaxurl = o.getAttribute('ajaxurl') ? o.getAttribute('ajaxurl') : o.href;
       _attachEvent(o, ajaxevent, newfunction('ajaxget', ajaxurl, o.getAttribute('ajaxtarget'), o.getAttribute('ajaxwaitid'), o.getAttribute('ajaxloading'), o.getAttribute('ajaxdisplay')));
@@ -626,7 +656,8 @@ function ajaxget(url, showid, waitid, loading, display, recall) {
         x.showId.style.display = x.display;
         ajaxinnerhtml(x.showId, s);
         ajaxupdateevents(x.showId);
-        if (x.autogoto) scroll(0, x.showId.offsetTop);
+        if (x.autogoto)
+          scroll(0, x.showId.offsetTop);
       }
     }
     ajaxerror = null;
@@ -635,7 +666,8 @@ function ajaxget(url, showid, waitid, loading, display, recall) {
     } else if (recall) {
       eval(recall);
     }
-    if (!evaled) evalscript(s);
+    if (!evaled)
+      evalscript(s);
   });
 }
 
@@ -682,13 +714,15 @@ function ajaxpost(formid, showid, waitid, showidclass, submitbtn, recall) {
       ajaxinnerhtml($(showid), s);
     }
     ajaxerror = null;
-    if (curform) curform.target = formtarget;
+    if (curform)
+      curform.target = formtarget;
     if (typeof recall == 'function') {
       recall();
     } else {
       eval(recall);
     }
-    if (!evaled) evalscript(s);
+    if (!evaled)
+      evalscript(s);
     ajaxframe.loading = 0;
     if (!BROWSER.firefox || BROWSER.safari) {
       $('append_parent').removeChild(ajaxframe.parentNode);
@@ -735,12 +769,18 @@ function ajaxmenu(ctrlObj, timeout, cache, duration, pos, recall, idclass, conte
   }
   var menuid = ctrlid + '_menu';
   var menu = $(menuid);
-  if (isUndefined(timeout)) timeout = 3000;
-  if (isUndefined(cache)) cache = 1;
-  if (isUndefined(pos)) pos = '43';
-  if (isUndefined(duration)) duration = timeout > 0 ? 0 : 3;
-  if (isUndefined(idclass)) idclass = 'p_pop';
-  if (isUndefined(contentclass)) contentclass = 'p_opt';
+  if (isUndefined(timeout))
+    timeout = 3000;
+  if (isUndefined(cache))
+    cache = 1;
+  if (isUndefined(pos))
+    pos = '43';
+  if (isUndefined(duration))
+    duration = timeout > 0 ? 0 : 3;
+  if (isUndefined(idclass))
+    idclass = 'p_pop';
+  if (isUndefined(contentclass))
+    contentclass = 'p_opt';
   var func = function () {
     showMenu({
       'ctrlid': ctrlObj.id,
@@ -874,7 +914,8 @@ function loadcss(cssname) {
   if (!CSSLOADED[cssname]) {
     if (!$('css_' + cssname)) {
       css = document.createElement('link');
-      css.id = 'css_' + cssname, css.type = 'text/css';
+      css.id = 'css_' + cssname,
+        css.type = 'text/css';
       css.rel = 'stylesheet';
       css.href = 'data/cache/style_' + STYLEID + '_' + cssname + '.css?' + VERHASH;
       var headNode = document.getElementsByTagName("head")[0];
@@ -892,7 +933,8 @@ function showMenu(v) {
   var menuid = isUndefined(v['menuid']) ? showid + '_menu' : v['menuid'];
   var ctrlObj = $(ctrlid);
   var menuObj = $(menuid);
-  if (!menuObj) return;
+  if (!menuObj)
+    return;
   var mtype = isUndefined(v['mtype']) ? 'menu' : v['mtype'];
   var evt = isUndefined(v['evt']) ? 'mouseover' : v['evt'];
   var pos = isUndefined(v['pos']) ? '43' : v['pos'];
@@ -934,17 +976,20 @@ function showMenu(v) {
       ctrlObj.unselectable = true;
       ctrlObj.outfunc = typeof ctrlObj.onmouseout == 'function' ? ctrlObj.onmouseout : null;
       ctrlObj.onmouseout = function () {
-        if (this.outfunc) this.outfunc();
+        if (this.outfunc)
+          this.outfunc();
         if (duration < 3 && !JSMENU['timer'][menuid]) {
           JSMENU['timer'][menuid] = setTimeout(function () {
             hideMenu(menuid, mtype);
           }, timeout);
         }
-      };
+      }
+      ;
       ctrlObj.overfunc = typeof ctrlObj.onmouseover == 'function' ? ctrlObj.onmouseover : null;
       ctrlObj.onmouseover = function (e) {
         doane(e);
-        if (this.overfunc) this.overfunc();
+        if (this.overfunc)
+          this.overfunc();
         if (evt == 'click') {
           clearTimeout(JSMENU['timer'][menuid]);
           JSMENU['timer'][menuid] = null;
@@ -956,7 +1001,8 @@ function showMenu(v) {
             }
           }
         }
-      };
+      }
+      ;
     }
   }
   if (!menuObj.getAttribute('initialized')) {
@@ -972,20 +1018,23 @@ function showMenu(v) {
     menuObj.style.zIndex = zindex + layer;
     menuObj.onclick = function (e) {
       return doane(e, 0, 1);
-    };
+    }
+    ;
     if (duration < 3) {
       if (duration > 1) {
         menuObj.onmouseover = function () {
           clearTimeout(JSMENU['timer'][menuid]);
           JSMENU['timer'][menuid] = null;
-        };
+        }
+        ;
       }
       if (duration != 1) {
         menuObj.onmouseout = function () {
           JSMENU['timer'][menuid] = setTimeout(function () {
             hideMenu(menuid, mtype);
           }, timeout);
-        };
+        }
+        ;
       }
     }
     if (cover) {
@@ -1001,7 +1050,8 @@ function showMenu(v) {
       coverObj.style.opacity = 0.5;
       coverObj.onclick = function () {
         hideMenu();
-      };
+      }
+      ;
       $('append_parent').appendChild(coverObj);
       _attachEvent(window, 'load', function () {
         coverObj.style.height = Math.max(document.documentElement.clientHeight, document.body.offsetHeight) + 'px';
@@ -1015,9 +1065,11 @@ function showMenu(v) {
         dragMenu(menuObj, event, 1);
       } catch (e) {
       }
-    };
+    }
+    ;
   }
-  if (cover) $(menuid + '_cover').style.display = '';
+  if (cover)
+    $(menuid + '_cover').style.display = '';
   if (fade) {
     var O = 0;
     var fadeIn = function (O) {
@@ -1061,13 +1113,14 @@ function showMenu(v) {
   if (!duration) {
     setTimeout('hideMenu(\'' + menuid + '\', \'' + mtype + '\')', timeout);
   }
-  if (!in_array(menuid, JSMENU['active'][layer])) JSMENU['active'][layer].push(menuid);
+  if (!in_array(menuid, JSMENU['active'][layer]))
+    JSMENU['active'][layer].push(menuid);
   menuObj.cache = cache;
   if (layer > JSMENU['layer']) {
     JSMENU['layer'] = layer;
   }
   var hasshow = function (ele) {
-    while (ele.parentNode && ((typeof(ele['currentStyle']) === 'undefined') ? window.getComputedStyle(ele, null) : ele['currentStyle'])['display'] !== 'none') {
+    while (ele.parentNode && ((typeof (ele['currentStyle']) === 'undefined') ? window.getComputedStyle(ele, null) : ele['currentStyle'])['display'] !== 'none') {
       ele = ele.parentNode;
     }
     if (ele === document) {
@@ -1112,7 +1165,8 @@ function delayShow(ctrlObj, call, time) {
     var ctrlid = ctrlObj.id;
     call = call || function () {
       showMenu(ctrlid);
-    };
+    }
+    ;
   }
   var time = isUndefined(time) ? 500 : time;
   delayShowST = setTimeout(function () {
@@ -1146,13 +1200,15 @@ function dragMenu(menuObj, e, op) {
         dragMenu(menuObj, e, 2);
       } catch (err) {
       }
-    };
+    }
+    ;
     document.onmouseup = function (e) {
       try {
         dragMenu(menuObj, e, 3);
       } catch (err) {
       }
-    };
+    }
+    ;
     doane(e);
   } else if (op == 2 && JSMENU['drag'][0]) {
     var menudragnow = [e.clientX, e.clientY];
@@ -1171,12 +1227,26 @@ function dragMenu(menuObj, e, op) {
 function setMenuPosition(showid, menuid, pos) {
   var showObj = $(showid);
   var menuObj = menuid ? $(menuid) : $(showid + '_menu');
-  if (isUndefined(pos) || !pos) pos = '43';
+  if (isUndefined(pos) || !pos)
+    pos = '43';
   var basePoint = parseInt(pos.substr(0, 1));
   var direction = parseInt(pos.substr(1, 1));
   var important = pos.indexOf('!') != -1 ? 1 : 0;
-  var sxy = 0, sx = 0, sy = 0, sw = 0, sh = 0, ml = 0, mt = 0, mw = 0, mcw = 0, mh = 0, mch = 0, bpl = 0, bpt = 0;
-  if (!menuObj || (basePoint > 0 && !showObj)) return;
+  var sxy = 0
+    , sx = 0
+    , sy = 0
+    , sw = 0
+    , sh = 0
+    , ml = 0
+    , mt = 0
+    , mw = 0
+    , mcw = 0
+    , mh = 0
+    , mch = 0
+    , bpl = 0
+    , bpt = 0;
+  if (!menuObj || (basePoint > 0 && !showObj))
+    return;
   if (showObj) {
     sxy = fetchOffset(showObj);
     sx = sxy['left'];
@@ -1233,7 +1303,8 @@ function setMenuPosition(showid, menuid, pos) {
   if (!important) {
     if (in_array(direction, [1, 4]) && ml < 0) {
       ml = bpl;
-      if (in_array(basePoint, [1, 4])) ml += sw;
+      if (in_array(basePoint, [1, 4]))
+        ml += sw;
     } else if (ml + mw > scrollLeft + document.body.clientWidth && sx >= mw) {
       ml = bpl - mw;
       if (in_array(basePoint, [2, 3])) {
@@ -1244,10 +1315,12 @@ function setMenuPosition(showid, menuid, pos) {
     }
     if (in_array(direction, [1, 2]) && mt < 0) {
       mt = bpt;
-      if (in_array(basePoint, [1, 2])) mt += sh;
+      if (in_array(basePoint, [1, 2]))
+        mt += sh;
     } else if (mt + mh > scrollTop + document.documentElement.clientHeight && sy >= mh) {
       mt = bpt - mh;
-      if (in_array(basePoint, [3, 4])) mt -= sh;
+      if (in_array(basePoint, [3, 4]))
+        mt -= sh;
     }
   }
   if (pos.substr(0, 3) == '210') {
@@ -1260,14 +1333,18 @@ function setMenuPosition(showid, menuid, pos) {
   }
   if (direction == 0 || menuObj.scrolly) {
     if (BROWSER.ie && BROWSER.ie < 7) {
-      if (direction == 0) mt += scrollTop;
+      if (direction == 0)
+        mt += scrollTop;
     } else {
-      if (menuObj.scrolly) mt -= scrollTop;
+      if (menuObj.scrolly)
+        mt -= scrollTop;
       menuObj.style.position = 'fixed';
     }
   }
-  if (ml) menuObj.style.left = ml + 'px';
-  if (mt) menuObj.style.top = mt + 'px';
+  if (ml)
+    menuObj.style.left = ml + 'px';
+  if (mt)
+    menuObj.style.top = mt + 'px';
   if (direction == 0 && BROWSER.ie && !document.documentElement.clientHeight) {
     menuObj.style.position = 'absolute';
     menuObj.style.top = (document.body.clientHeight - menuObj.clientHeight) / 2 + 'px';
@@ -1292,8 +1369,10 @@ function hideMenu(attr, mtype) {
     return;
   } else if (typeof attr == 'string') {
     var menuObj = $(attr);
-    if (!menuObj || (mtype && menuObj.mtype != mtype)) return;
-    var ctrlObj = '', ctrlclass = '';
+    if (!menuObj || (mtype && menuObj.mtype != mtype))
+      return;
+    var ctrlObj = ''
+      , ctrlclass = '';
     if ((ctrlObj = $(menuObj.getAttribute('ctrlid'))) && (ctrlclass = menuObj.getAttribute('ctrlclass'))) {
       var reg = new RegExp(' ' + ctrlclass);
       ctrlObj.className = ctrlObj.className.replace(reg, '');
@@ -1303,15 +1382,18 @@ function hideMenu(attr, mtype) {
       if (menuObj.cache) {
         if (menuObj.style.visibility != 'hidden') {
           menuObj.style.display = 'none';
-          if (menuObj.cover) $(attr + '_cover').style.display = 'none';
+          if (menuObj.cover)
+            $(attr + '_cover').style.display = 'none';
         }
       } else {
         menuObj.parentNode.removeChild(menuObj);
-        if (menuObj.cover) $(attr + '_cover').parentNode.removeChild($(attr + '_cover'));
+        if (menuObj.cover)
+          $(attr + '_cover').parentNode.removeChild($(attr + '_cover'));
       }
       var tmp = [];
       for (var k in JSMENU['active'][menuObj.layer]) {
-        if (attr != JSMENU['active'][menuObj.layer][k]) tmp.push(JSMENU['active'][menuObj.layer][k]);
+        if (attr != JSMENU['active'][menuObj.layer][k])
+          tmp.push(JSMENU['active'][menuObj.layer][k]);
       }
       JSMENU['active'][menuObj.layer] = tmp;
     };
@@ -1357,7 +1439,9 @@ function getCurrentStyle(obj, cssproperty, csspropertyNS) {
 }
 
 function fetchOffset(obj, mode) {
-  var left_offset = 0, top_offset = 0, mode = !mode ? 0 : mode;
+  var left_offset = 0
+    , top_offset = 0
+    , mode = !mode ? 0 : mode;
   if (obj.getBoundingClientRect && !mode) {
     var rect = obj.getBoundingClientRect();
     var scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
@@ -1380,7 +1464,10 @@ function fetchOffset(obj, mode) {
       top_offset += obj.offsetTop;
     }
   }
-  return {'left': left_offset, 'top': top_offset};
+  return {
+    'left': left_offset,
+    'top': top_offset
+  };
 }
 
 function showTip(ctrlobj) {
@@ -1408,9 +1495,13 @@ function showDialog(msg, mode, t, func, cover, funccancel, leftmsg, confirmtxt, 
   confirmtxtdefault = '确定';
   closetime = isUndefined(closetime) ? '' : closetime;
   closefunc = function () {
-    if (typeof func == 'function') func(); else eval(func);
+    if (typeof func == 'function')
+      func();
+    else
+      eval(func);
     hideMenu(menuid, 'dialog');
-  };
+  }
+  ;
   if (closetime) {
     showPrompt(null, null, '<i>' + msg + '</i>', closetime * 1000, 'popuptext');
     return;
@@ -1423,7 +1514,8 @@ function showDialog(msg, mode, t, func, cover, funccancel, leftmsg, confirmtxt, 
   }
   confirmtxt = confirmtxt ? confirmtxt : confirmtxtdefault;
   canceltxt = canceltxt ? canceltxt : '取消';
-  if (menuObj) hideMenu('fwin_dialog', 'dialog');
+  if (menuObj)
+    hideMenu('fwin_dialog', 'dialog');
   menuObj = document.createElement('div');
   menuObj.style.display = 'none';
   menuObj.className = 'fwinmask';
@@ -1446,15 +1538,24 @@ function showDialog(msg, mode, t, func, cover, funccancel, leftmsg, confirmtxt, 
   }
   s += '</td><td class="m_r"></td></tr><tr><td class="b_l"></td><td class="b_c"></td><td class="b_r"></td></tr></table>';
   menuObj.innerHTML = s;
-  if ($('fwin_dialog_submit')) $('fwin_dialog_submit').onclick = function () {
-    if (typeof func == 'function') func(); else eval(func);
-    hideMenu(menuid, 'dialog');
-  };
+  if ($('fwin_dialog_submit'))
+    $('fwin_dialog_submit').onclick = function () {
+      if (typeof func == 'function')
+        func();
+      else
+        eval(func);
+      hideMenu(menuid, 'dialog');
+    }
+    ;
   if ($('fwin_dialog_cancel')) {
     $('fwin_dialog_cancel').onclick = function () {
-      if (typeof funccancel == 'function') funccancel(); else eval(funccancel);
+      if (typeof funccancel == 'function')
+        funccancel();
+      else
+        eval(funccancel);
       hideMenu(menuid, 'dialog');
-    };
+    }
+    ;
     $('fwin_dialog_close').onclick = $('fwin_dialog_cancel').onclick;
   }
   showMenu({
@@ -1467,7 +1568,8 @@ function showDialog(msg, mode, t, func, cover, funccancel, leftmsg, confirmtxt, 
     'cover': cover
   });
   try {
-    if ($('fwin_dialog_submit')) $('fwin_dialog_submit').focus();
+    if ($('fwin_dialog_submit'))
+      $('fwin_dialog_submit').focus();
   } catch (e) {
   }
 }
@@ -1481,7 +1583,8 @@ function showWindow(k, url, mode, cache, menuv) {
   var loadingst = null;
   var hidedom = '';
   if (disallowfloat && disallowfloat.indexOf(k) != -1) {
-    if (BROWSER.ie) url += (url.indexOf('?') != -1 ? '&' : '?') + 'referer=' + escape(location.href);
+    if (BROWSER.ie)
+      url += (url.indexOf('?') != -1 ? '&' : '?') + 'referer=' + escape(location.href);
     location.href = url;
     doane();
     return;
@@ -1520,7 +1623,8 @@ function showWindow(k, url, mode, cache, menuv) {
         objs[i].setAttribute('fwin', k);
       }
       if (objs[i].className == 'flb' && !fctrlidinit) {
-        if (!objs[i].id) objs[i].id = 'fctrl_' + k;
+        if (!objs[i].id)
+          objs[i].id = 'fctrl_' + k;
         drag = objs[i].id;
         fctrlidinit = true;
       }
@@ -1697,7 +1801,8 @@ function AC_GetArgs(args, classid, mimeType) {
 
 function simulateSelect(selectId, widthvalue) {
   var selectObj = $(selectId);
-  if (!selectObj) return;
+  if (!selectObj)
+    return;
   if (BROWSER.other) {
     if (selectObj.getAttribute('change')) {
       selectObj.onchange = function () {
@@ -1713,7 +1818,8 @@ function simulateSelect(selectId, widthvalue) {
   var ul = document.createElement('ul');
   var handleKeyDown = function (e) {
     e = BROWSER.ie ? event : e;
-    if (e.keyCode == 40 || e.keyCode == 38) doane(e);
+    if (e.keyCode == 40 || e.keyCode == 38)
+      doane(e);
   };
   var selectwidth = (selectObj.getAttribute('width', i) ? selectObj.getAttribute('width', i) : widthvalue) + 'px';
   var tabindex = selectObj.getAttribute('tabindex', i) ? selectObj.getAttribute('tabindex', i) : 1;
@@ -1741,7 +1847,8 @@ function simulateSelect(selectId, widthvalue) {
       }
       hideMenu(menuObj.id);
       return false;
-    };
+    }
+    ;
     ul.appendChild(li);
   }
   selectObj.options.length = 0;
@@ -1763,13 +1870,16 @@ function simulateSelect(selectId, widthvalue) {
       'pos': '43'
     });
     doane(e);
-  };
+  }
+  ;
   $(selectId + '_ctrl').onfocus = menuObj.onfocus = function () {
     _attachEvent(document.body, 'keydown', handleKeyDown);
-  };
+  }
+  ;
   $(selectId + '_ctrl').onblur = menuObj.onblur = function () {
     _detachEvent(document.body, 'keydown', handleKeyDown);
-  };
+  }
+  ;
   $(selectId + '_ctrl').onkeyup = function (e) {
     e = e ? e : window.event;
     value = e.keyCode;
@@ -1800,7 +1910,8 @@ function simulateSelect(selectId, widthvalue) {
     } else if (value == 27) {
       hideMenu(menuObj.id);
     }
-  };
+  }
+  ;
 }
 
 function switchTab(prefix, current, total, activeclass) {
@@ -1848,7 +1959,8 @@ function thumbImg(obj, method) {
       if (!obj.onclick) {
         obj.onclick = function () {
           zoom(obj, obj.src);
-        };
+        }
+        ;
       }
     }
   }
@@ -1871,7 +1983,8 @@ function showColorBox(ctrlid, layer, k, bgcolor) {
 }
 
 function ctrlEnter(event, btnId, onlyEnter) {
-  if (isUndefined(onlyEnter)) onlyEnter = 0;
+  if (isUndefined(onlyEnter))
+    onlyEnter = 0;
   if ((event.ctrlKey || onlyEnter) && event.keyCode == 13) {
     $(btnId).click();
     return false;
@@ -1880,10 +1993,12 @@ function ctrlEnter(event, btnId, onlyEnter) {
 }
 
 function parseurl(str, mode, parsecode) {
-  if (isUndefined(parsecode)) parsecode = true;
-  if (parsecode) str = str.replace(/\[code\]([\s\S]+?)\[\/code\]/ig, function ($1, $2) {
-    return codetag($2, -1);
-  });
+  if (isUndefined(parsecode))
+    parsecode = true;
+  if (parsecode)
+    str = str.replace(/\[code\]([\s\S]+?)\[\/code\]/ig, function ($1, $2) {
+      return codetag($2, -1);
+    });
   str = str.replace(/([^>=\]"'\/]|^)((((https?|ftp):\/\/)|www\.)([\w\-]+\.)*[\w\-\u4e00-\u9fa5]+\.([\.a-zA-Z0-9]+|\u4E2D\u56FD|\u7F51\u7EDC|\u516C\u53F8)((\?|\/|:)+[\w\.\/=\?%\-&~`@':+!]*)+\.(swf|flv))/ig, '$1[flash]$2[/flash]');
   str = str.replace(/([^>=\]"'\/]|^)((((https?|ftp):\/\/)|www\.)([\w\-]+\.)*[\w\-\u4e00-\u9fa5]+\.([\.a-zA-Z0-9]+|\u4E2D\u56FD|\u7F51\u7EDC|\u516C\u53F8)((\?|\/|:)+[\w\.\/=\?%\-&~`@':+!]*)+\.(mp3|wma))/ig, '$1[audio]$2[/audio]');
   str = str.replace(/([^>=\]"'\/@]|^)((((https?|ftp|gopher|news|telnet|rtsp|mms|callto|bctp|ed2k|thunder|qqdl|synacast):\/\/))([\w\-]+\.)*[:\.@\-\w\u4e00-\u9fa5]+\.([\.a-zA-Z0-9]+|\u4E2D\u56FD|\u7F51\u7EDC|\u516C\u53F8)((\?|\/|:)+[\w\.\/=\?%\-&;~`@':+!#]*)*)/ig, mode == 'html' ? '$1<a href="$2" target="_blank">$2</a>' : '$1[url]$2[/url]');
@@ -1900,7 +2015,8 @@ function parseurl(str, mode, parsecode) {
 function codetag(text, br) {
   var br = !br ? 1 : br;
   DISCUZCODE['num']++;
-  if (br > 0 && typeof wysiwyg != 'undefined' && wysiwyg) text = text.replace(/<br[^\>]*>/ig, '\n');
+  if (br > 0 && typeof wysiwyg != 'undefined' && wysiwyg)
+    text = text.replace(/<br[^\>]*>/ig, '\n');
   text = text.replace(/\$/ig, '$$');
   DISCUZCODE['html'][DISCUZCODE['num']] = '[code]' + text + '[/code]';
   return '[\tDISCUZ_CODE_' + DISCUZCODE['num'] + '\t]';
@@ -2010,15 +2126,18 @@ function initSearchmenu(searchform, cloudSearchUrl) {
         searchtxt.value = '';
         searchtxt.className = tclass;
       }
-    };
+    }
+    ;
     searchtxt.onblur = function () {
       if (searchtxt.value == '') {
         searchtxt.value = '请输入搜索内容';
         searchtxt.className = tclass + ' xg1';
       }
-    };
+    }
+    ;
   }
-  if (!$(searchform + '_type_menu')) return false;
+  if (!$(searchform + '_type_menu'))
+    return false;
   var o = $(searchform + '_type');
   var a = $(searchform + '_type_menu').getElementsByTagName('a');
   var formobj = searchtxt.form;
@@ -2050,7 +2169,8 @@ function initSearchmenu(searchform, cloudSearchUrl) {
       } else {
         formobj.action = defaultUrl;
       }
-    };
+    }
+    ;
   }
 }
 
@@ -2118,10 +2238,12 @@ function cardInit() {
       a[i].setAttribute('mid', 'card_' + cardids[href]);
       a[i].onmouseover = function () {
         cardShow(this)
-      };
+      }
+      ;
       a[i].onmouseout = function () {
         clearTimeout(USERCARDST);
-      };
+      }
+      ;
     }
   }
 }
@@ -2138,7 +2260,11 @@ function navShow(id) {
     }
   }
   if (mnobj.className != 'cl current') {
-    showMenu({'ctrlid': 'mn_' + id, 'menuid': 'snav_mn_' + id, 'pos': '*'});
+    showMenu({
+      'ctrlid': 'mn_' + id,
+      'menuid': 'snav_mn_' + id,
+      'pos': '*'
+    });
     mnobj.className = 'cl floatmu';
     mnobj.style.width = ($('nv').clientWidth) + 'px';
     mnobj.style.display = '';
@@ -2146,7 +2272,11 @@ function navShow(id) {
 }
 
 function strLenCalc(obj, checklen, maxlen) {
-  var v = obj.value, charlen = 0, maxlen = !maxlen ? 200 : maxlen, curlen = maxlen, len = strlen(v);
+  var v = obj.value
+    , charlen = 0
+    , maxlen = !maxlen ? 200 : maxlen
+    , curlen = maxlen
+    , len = strlen(v);
   for (var i = 0; i < v.length; i++) {
     if (v.charCodeAt(i) < 0 || v.charCodeAt(i) > 255) {
       curlen -= charset == 'utf-8' ? 2 : 1;
@@ -2178,7 +2308,12 @@ function ipNotice() {
 }
 
 function noticeTitle() {
-  NOTICETITLE = {'State': 0, 'oldTitle': NOTICECURTITLE, flashNumber: 0, sleep: 15};
+  NOTICETITLE = {
+    'State': 0,
+    'oldTitle': NOTICECURTITLE,
+    flashNumber: 0,
+    sleep: 15
+  };
   if (!getcookie('noticeTitle')) {
     window.setInterval('noticeTitleFlash();', 500);
   } else {
@@ -2332,7 +2467,8 @@ function checkBlind() {
 }
 
 function getElementOffset(element) {
-  var left = element.offsetLeft, top = element.offsetTop;
+  var left = element.offsetLeft
+    , top = element.offsetTop;
   while (element = element.offsetParent) {
     left += element.offsetLeft;
     top += element.offsetTop;
@@ -2340,7 +2476,10 @@ function getElementOffset(element) {
   if ($('nv').style.position == 'fixed') {
     top -= parseInt($('nv').style.height);
   }
-  return {'left': left, 'top': top};
+  return {
+    'left': left,
+    'top': top
+  };
 }
 
 function mobileplayer() {

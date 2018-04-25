@@ -1,6 +1,6 @@
 ﻿var express = require('express');
 var app = express();
-var charset = require('superagent-charset');//解析编码
+var charset = require('superagent-charset');//解析编码 ，解码后再用$().text()可以看到效果
 var req=superagent = charset(require('superagent'));//是个 http 方面的库，可以发起 get 或 post 请求。
 var cheerio = require('cheerio'); //Node.js 版的 jquery
 var request = require('request');
@@ -144,40 +144,53 @@ function toGetTodayLoveBook(res) {
       }
     });
 }
-app.post('/api/searchValue',urlencodedParser,function (req,res) {
+app.post('/api/searchValue',urlencodedParser,function (req,response) {
   var  name=req.body.name;
-  superagent
-    .get('https://www.shukuai.org/search.php')
-    .charset()
-    .query({
-      mod:'forum',
-      searchid:1435,
-      orderby:'lastpost',
-      ascdesc:'desc',
-      searchsubmit:'yes',
-       kw:encodeURI(name)
-    })
-    .set({
-      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-      'Accept-Encoding': 'gzip, deflate',
-      'Accept-Language': 'zh-CN,zh;q=0.9',
-      'Connection': 'keep-alive',
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Host': 'www.shukuai.org',
-      'Origin':'https://www.shukuai.org',
-      'Referer': 'https://www.shukuai.org/search.php',
-      'Upgrade-Insecure-Requests':1,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
-    })
-    .end((err, res) => {
-      if(err){
-        console.log('searchValue error');
-        return;
-      }
-      let $ = cheerio.load(res.text);
-       console.log($('html').html());
-    })
+
+  openPage()
+    .then(search)
+
 })
+let cookieTest;
+//打开页面
+function openPage() {
+  return new Promise((resolve,reject)=>{
+    superagent
+      .get('https://www.shukuai.org/search.php')
+      .charset('gbk')
+      .end((err, res) => {
+        if(err){
+          console.log('start error');
+          return;
+        }
+        let $ = cheerio.load(res.text);
+        cookieTest= res.headers['set-cookie'].join(';');
+        let hash=$('input[name="formhash"]').val();
+        resolve(hash);
+      })
+  });
+}
+//搜索
+function search(hash){
+  return new Promise((resolve,reject)=>{
+    superagent
+      .post('https://www.shukuai.org/search.php')
+      .charset('gbk')
+      .query({mod:'forum'})
+      .send({formhash:hash})
+      .type('form')
+       .set('Cookie',cookieTest)
+      .end((err, res) => {
+        if(err){
+          console.log('start error');
+          return;
+        }
+        let $ = cheerio.load(res.text);
+         console.log(res.text);
+         resolve();
+      })
+  });
+}
 
 
 //登录页

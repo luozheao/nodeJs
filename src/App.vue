@@ -84,6 +84,15 @@
           item.realDownLink?"":"(您的书币不足)"
           }} </a></div>
       </el-col>
+      <el-col :span="24">
+        <div class="toLeft font32">搜索书籍信息：</div>
+        <div v-for="item in searchBooks" class="font18 red">
+          <a :href="'/api/searchDownload?name='+item.href">
+          {{item.name}}</a>
+        </div>
+      </el-col>
+
+
     </el-row>
   </div>
 </template>
@@ -102,7 +111,6 @@
         searchValue:'',
         searchBooks:[],
         loading:false,
-
       }
     },
     name: 'luozheao',
@@ -133,6 +141,7 @@
       },
 
       searchBlurEvent(){
+        if(!this.searchValue){return;}
         this.loveBooks=[];
         this.signMsg=[];
         this.loading=true;
