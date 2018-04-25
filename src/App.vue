@@ -7,6 +7,12 @@
     color: #2c3e50;
     height: 100%;
     background: url("./images/flower.jpg") repeat;
+    .el-loading-spinner .el-loading-text{
+      font-size:32px;
+    }
+    .el-loading-mask{
+      font-size:100px;
+    }
     .el-button {
       font-size: 28px;
     }
@@ -37,7 +43,10 @@
   }
 </style>
 <template>
-  <div id="app">
+  <div id="app"  v-loading="loading"
+       element-loading-text="拼命加载中"
+       element-loading-spinner="el-icon-loading"
+       element-loading-background="rgba(0, 0, 0, 0.8)">
     <br>
     <el-row>
       <el-col :span="24" class="font32 center">言情小说论坛快捷操作
@@ -49,6 +58,15 @@
       <el-col :span="24">
         <el-button type="success" @click="sign">签到</el-button>
         <el-button type="warning" @click="getTodayLoveBook">获取当日小说</el-button>
+      </el-col>
+    </el-row>
+    <br>
+    <el-row>
+      <el-col :span="4">&nbsp;</el-col>
+      <el-col :span="16">
+        <el-input  class="font28 "
+                   @blur="searchBlurEvent"
+                   v-model="searchValue" placeholder="请输入书名" suffix-icon="el-icon-search"></el-input>
       </el-col>
     </el-row>
 
@@ -81,6 +99,10 @@
         loveBooks: [],
         showMsg:false,
         msg:"正在获取书籍，请不要离开页面...",
+        searchValue:'',
+        searchBooks:[],
+        loading:false,
+
       }
     },
     name: 'luozheao',
@@ -106,6 +128,18 @@
             }else{
               this.showMsg=false;
             }
+          }
+        });
+      },
+
+      searchBlurEvent(){
+        this.loveBooks=[];
+        this.signMsg=[];
+        this.loading=true;
+        this.$api.post('/api/searchValue', {name:this.searchValue}, response => {
+          this.loading=false;
+          if (response.status == 200) {
+              this.searchBooks = response.data;
           }
         });
       },

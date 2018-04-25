@@ -1,11 +1,13 @@
 ﻿var express = require('express');
 var app = express();
 var charset = require('superagent-charset');//解析编码
-var req = charset(require('superagent'));//是个 http 方面的库，可以发起 get 或 post 请求。
+var req=superagent = charset(require('superagent'));//是个 http 方面的库，可以发起 get 或 post 请求。
 var cheerio = require('cheerio'); //Node.js 版的 jquery
 var request = require('request');
 var async = require('async')
 var fs = require('fs');
+var bodyParser = require('body-parser');
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
 // var urlencode = require('urlencode');
 var bodyParser = require('body-parser');
 var url = require('url');
@@ -49,6 +51,7 @@ app.use(express.static('build'))
 app.use(express.static('dist'))
 
 
+
 app.get('/api/download', function (req, res) {
   var name=req.query.name;
   res.set({
@@ -57,14 +60,19 @@ app.get('/api/download', function (req, res) {
   });
   var path=req.hostname.includes(127)? "../books/":"./node/books/";
   var fReadStream = fs.createReadStream(path+name);
+  //写法一
+  // fReadStream.pipe(res);
+  //写法二
   // fReadStream.on("data",function(chunk){res.write(chunk,"binary")});
   // fReadStream.on("end",function () {
   //   res.end();
   // });
-    fReadStream.pipe(res)
+  // 写法三
+  res.download(path+name, name,function(){
+    console.log(new Date().getHours()+'点下载'+name);
+  });
+
 })
-
-
 app.get('/api/sign', function (req, res) {
   toSign(res);
 });
@@ -136,6 +144,41 @@ function toGetTodayLoveBook(res) {
       }
     });
 }
+app.post('/api/searchValue',urlencodedParser,function (req,res) {
+  var  name=req.body.name;
+  superagent
+    .get('https://www.shukuai.org/search.php')
+    .charset()
+    .query({
+      mod:'forum',
+      searchid:1435,
+      orderby:'lastpost',
+      ascdesc:'desc',
+      searchsubmit:'yes',
+       kw:encodeURI(name)
+    })
+    .set({
+      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+      'Accept-Encoding': 'gzip, deflate',
+      'Accept-Language': 'zh-CN,zh;q=0.9',
+      'Connection': 'keep-alive',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Host': 'www.shukuai.org',
+      'Origin':'https://www.shukuai.org',
+      'Referer': 'https://www.shukuai.org/search.php',
+      'Upgrade-Insecure-Requests':1,
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
+    })
+    .end((err, res) => {
+      if(err){
+        console.log('searchValue error');
+        return;
+      }
+      let $ = cheerio.load(res.text);
+       console.log($('html').html());
+    })
+})
+
 
 //登录页
 function  start(pMsg) {
