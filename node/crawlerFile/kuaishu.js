@@ -8,7 +8,7 @@ var async = require('async')
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
-// var urlencode = require('urlencode');
+  var urlencode = require('urlencode');
 var bodyParser = require('body-parser');
 var url = require('url');
 
@@ -171,31 +171,35 @@ function openPage(name,response) {
   });
 }
 //搜索
+
+
+
 function search({hash,name,response}){
   return new Promise((resolve,reject)=>{
+    var aaa=urlencode('三','gbk');
     superagent
       .post('https://www.shukuai.org/search.php')
-      .charset('gbk')
+      .charset()
       .query({mod:'forum'})
-       .send({
+      .send({
          formhash:hash,
-         srchtxt:encodeURI(name),
+         srchtxt:'\%c8\%fd',
          searchsubmit:'yes'
        })
       .type('form')
       .set({
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Connection': 'keep-alive',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/x-www-form-urlencoded;',
         'Host': 'www.shukuai.org',
         'Origin':'https://www.shukuai.org',
         'Referer': 'https://www.shukuai.org/search.php?mod=forum',
         'Upgrade-Insecure-Requests':1,
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
       })
-       .set('Cookie',cookieTest)
+      .set('Cookie',cookieTest)
       .end((err, res) => {
         if(err){
           console.log('start error',err);
@@ -203,7 +207,7 @@ function search({hash,name,response}){
         }
         var arr=[]
         let $ = cheerio.load(res.text);
-              console.log(res.text);
+         console.log(res);
          $('.xs3 a').each(function () {
            arr.push({
              name: $(this).text(),

@@ -139,7 +139,6 @@
           }
         });
       },
-
       searchBlurEvent(){
         if(!this.searchValue){return;}
         this.loveBooks=[];
@@ -149,6 +148,9 @@
           this.loading=false;
           if (response.status == 200) {
               this.searchBooks = response.data;
+              if(this.searchBooks.length==0){
+                this.$message.error('对不起，没有找到匹配结果。');
+              }
           }
         });
       },
