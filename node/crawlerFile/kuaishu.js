@@ -147,13 +147,13 @@ function toGetTodayLoveBook(res) {
 app.post('/api/searchValue',urlencodedParser,function (req,response) {
   var  name=req.body.name;
 
-  openPage()
+  openPage(name,response)
     .then(search)
 
 })
 let cookieTest;
 //打开页面
-function openPage() {
+function openPage(name,response) {
   return new Promise((resolve,reject)=>{
     superagent
       .get('https://www.shukuai.org/search.php')
@@ -166,28 +166,53 @@ function openPage() {
         let $ = cheerio.load(res.text);
         cookieTest= res.headers['set-cookie'].join(';');
         let hash=$('input[name="formhash"]').val();
-        resolve(hash);
+        resolve({hash,name,response});
       })
   });
 }
 //搜索
-function search(hash){
+function search({hash,name,response}){
   return new Promise((resolve,reject)=>{
     superagent
       .post('https://www.shukuai.org/search.php')
       .charset('gbk')
       .query({mod:'forum'})
-      .send({formhash:hash})
+       .send({
+         formhash:hash,
+         srchtxt:encodeURI(name),
+         searchsubmit:'yes'
+       })
       .type('form')
+      .set({
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Host': 'www.shukuai.org',
+        'Origin':'https://www.shukuai.org',
+        'Referer': 'https://www.shukuai.org/search.php?mod=forum',
+        'Upgrade-Insecure-Requests':1,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
+      })
        .set('Cookie',cookieTest)
       .end((err, res) => {
         if(err){
-          console.log('start error');
+          console.log('start error',err);
           return;
         }
+        var arr=[]
         let $ = cheerio.load(res.text);
-         console.log(res.text);
+              console.log(res.text);
+         $('.xs3 a').each(function () {
+           arr.push({
+             name: $(this).text(),
+             href:$(this).attr('href')
+           })
+         });
          resolve();
+         response.end(JSON.stringify(arr));
+
       })
   });
 }
