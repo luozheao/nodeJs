@@ -76,7 +76,6 @@ app.get('/api/download', function (req, res) {
 
 })
 app.get('/api/searchDownload', function (req, res) {
-
   //获取下载链接
   var href= req.url.split('name=')[1];
   //获取真实下载链接
@@ -86,6 +85,7 @@ app.get('/api/searchDownload', function (req, res) {
         .then(login)
         .then(getHtml)
         .then((res)=>{
+
           getJumpLink([{href:href}])
             .then(realLink)
             .then((item)=>{
@@ -98,7 +98,6 @@ app.get('/api/searchDownload', function (req, res) {
        console.log(items,1234)
        request(items[0][0].realDownLink)
           .pipe(res)
-
     });
 })
 
@@ -169,8 +168,8 @@ function toGetTodayLoveBook(res) {
     function (err, items) {
        console.log(items);
        saveBook(items[0]);
-      if(res){
-        res.end(JSON.stringify(items[0]));
+       if(res){
+         res.end(JSON.stringify(items[0]));
       }
     });
 }
@@ -248,9 +247,6 @@ function search({hash,name,response}){
   });
 }
 
-
-// openPage(null,null)
-//   .then(search)
 
 //登录页
 function  start(pMsg) {
@@ -422,7 +418,7 @@ function loveBook() {
           console.log('loveBook error');
           return;
         }
-           if(!err){
+           if(!err) {
           let $ = cheerio.load(res.text);
           let obj=$('.xl.xl2.cl li a');
           let len=obj.length;
@@ -470,9 +466,46 @@ function getJumpLink(booksArr){
         }
         if(!err){
           let $ = cheerio.load(res.text);
-          booksArrObj.downLink= $('.attnm a').attr('href')
-          console.log(booksArrObj,'downLink');
-          callback(null,booksArrObj);
+          booksArrObj.downLink= $('.attnm a').attr('href')||$('ignore_js_op span a').attr('href');
+
+          if(!booksArrObj.downLink.includes('www.shukuai')){
+              let urlStr='https://www.shukuai.org/'+booksArrObj.downLink;
+               new Promise((resolve1,def)=>{
+                 req
+                   .get(urlStr)
+                   .charset('gbk')
+                   .set({
+                     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                     'Accept-Encoding': 'gzip, deflate',
+                     'Accept-Language': 'zh-CN,zh;q=0.9',
+                     'Connection': 'keep-alive',
+                     'Content-Type': 'application/x-www-form-urlencoded',
+                     'Host': 'www.shukuai.org',
+                     'Origin':'https://www.shukuai.org',
+                     'Referer': 'https://www.shukuai.org/forum.php?mod=forumdisplay&fid=37',
+                     'Upgrade-Insecure-Requests':1,
+                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
+                   })
+                   .set('Cookie',cookie2)
+                   .type('form')
+                   .end((err, res) => {
+                       let $ = cheerio.load(res.text);
+                       let arr=[];
+                     $('.bm.mtn  a').each(function () {
+                        arr.push($(this).attr('href'));
+                     });
+                     booksArrObj.downLink= arr[2];
+                     console.log(booksArrObj,'downLink');
+                     callback(null,booksArrObj);
+                     resolve1();
+                   });
+               })
+          }else {
+            console.log(booksArrObj,'downLink');
+            callback(null,booksArrObj);
+          }
+
+
         }
       })
   }
@@ -509,7 +542,7 @@ function realLink(booksArr) {
         .type('form')
         .end((err, res) => {
           if(err){
-            console.log('realLink error');
+            console.log('realLink error',err);
             return;
           }
           if(!err){
@@ -518,7 +551,7 @@ function realLink(booksArr) {
               console.log($('.alert_error').text());
             }else{
               item.realDownLink = $('.alert_btnleft a').attr('href')
-              console.log(  item.realDownLink );
+              console.log(item.realDownLink );
             }
             callback(null,item);
           }
