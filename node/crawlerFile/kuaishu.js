@@ -20,6 +20,7 @@ var msg={
 var cookie2;
 var formhash;
 var booksArr=[];
+var bookPath="";
 let msgArr=[
   {
     username:'ϾZHI',
@@ -55,7 +56,7 @@ app.get('/api/download', function (req, res) {
     "Content-type":"application/octet-stream",
     'Content-Disposition': "attachment;filename=book.rar"
   });
-  var path=req.hostname.includes(127)? "../books/":"./node/books/";
+  var path=bookPath=req.hostname.includes(127)? "../books/":"./node/books/";
   var fReadStream = fs.createReadStream(path+name);
   //写法一
   // fReadStream.pipe(res);
@@ -100,7 +101,7 @@ function getSaveBooksName(res,req) {
   //第一步，获取文件名
   var saveBooks=[];
   console.log(req.hostname)
-  var path=req.hostname.includes(127)? "../books":"./node/books";
+  var path=bookPath=req.hostname.includes(127)? "../books":"./node/books";
   fs.readdir(path, function(err,files){
     if(err){
       console.log("文件不存在",err);
@@ -495,13 +496,13 @@ function realLink(booksArr) {
 }
 //保存小说
 function saveBook(result){
-  if(!fs.existsSync("../books")){
-    fs.mkdirSync("../books");
+  if(!fs.existsSync(bookPath)){
+    fs.mkdirSync(bookPath);
   }
   result.forEach(function (item) {
     //不知道怎么解压
     request(item.realDownLink)
-      .pipe(fs.createWriteStream('../books/'+item.name+'.rar'));
+      .pipe(fs.createWriteStream(bookPath+item.name+'.rar'));
   })
 }
 
