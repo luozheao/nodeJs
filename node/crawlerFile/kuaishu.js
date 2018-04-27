@@ -75,6 +75,34 @@ app.get('/api/download', function (req, res) {
   });
 
 })
+app.get('/api/searchDownload', function (req, res) {
+
+  //获取下载链接
+  var href= req.url.split('name=')[1];
+  //获取真实下载链接
+  var index=(new Date().getDate())%5;
+  async.mapLimit([msgArr[index]],1, function (p, callback) {
+      start(p)
+        .then(login)
+        .then(getHtml)
+        .then((res)=>{
+          getJumpLink([{href:href}])
+            .then(realLink)
+            .then((item)=>{
+               callback(null,item)
+          });
+        });
+    },
+    function (err, items) {
+      //下载
+       console.log(items,1234)
+       request(items[0][0].realDownLink)
+          .pipe(res)
+
+    });
+})
+
+
 app.get('/api/sign', function (req, res) {
   toSign(res);
 });
@@ -443,6 +471,7 @@ function getJumpLink(booksArr){
         if(!err){
           let $ = cheerio.load(res.text);
           booksArrObj.downLink= $('.attnm a').attr('href')
+          console.log(booksArrObj,'downLink');
           callback(null,booksArrObj);
         }
       })
@@ -489,6 +518,7 @@ function realLink(booksArr) {
               console.log($('.alert_error').text());
             }else{
               item.realDownLink = $('.alert_btnleft a').attr('href')
+              console.log(  item.realDownLink );
             }
             callback(null,item);
           }
