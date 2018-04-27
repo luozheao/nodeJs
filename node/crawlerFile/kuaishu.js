@@ -20,7 +20,7 @@ var msg={
 var cookie2;
 var formhash;
 var booksArr=[];
-var bookPath="";
+var bookPath= "../books/";//"./node/books/";
 let msgArr=[
   {
     username:'ϾZHI',
@@ -56,7 +56,7 @@ app.get('/api/download', function (req, res) {
     "Content-type":"application/octet-stream",
     'Content-Disposition': "attachment;filename=book.rar"
   });
-  var path=bookPath=req.hostname.includes(127)? "../books/":"./node/books/";
+  var path=bookPath;
   var fReadStream = fs.createReadStream(path+name);
   //写法一
   // fReadStream.pipe(res);
@@ -101,7 +101,7 @@ function getSaveBooksName(res,req) {
   //第一步，获取文件名
   var saveBooks=[];
   console.log(req.hostname)
-  var path=bookPath=req.hostname.includes(127)? "../books":"./node/books";
+
   fs.readdir(path, function(err,files){
     if(err){
       console.log("文件不存在",err);
@@ -120,9 +120,9 @@ function getSaveBooksName(res,req) {
   });
 }
 function toGetTodayLoveBook(res) {
-  var index=new Date().getDate()%5;
+  var index=(new Date().getDate()+1)%5;
   async.mapLimit([msgArr[index]],1, function (p, callback) {
-      start(p)
+         start(p)
         .then(login)
         .then(getHtml)
         .then((res)=>{
@@ -227,6 +227,7 @@ function  start(pMsg) {
       .get('https://www.shukuai.org/member.php')
       .charset('gbk')
       .end((err, res) => {
+
         if(err){
           console.log('start error');
           return;
@@ -489,7 +490,6 @@ function realLink(booksArr) {
           }
         })
     }, function (err, result) {
-      console.log(err,result);
        resolve(result);
     });
   });
@@ -508,6 +508,7 @@ function saveBook(result){
 
 
 var server = app.listen(8088, function () {
+
    setInterval(()=>{
      toSign();//每隔24小时签到一次
      console.log(new Date().getHours()+'点签到成功')
@@ -518,7 +519,8 @@ var server = app.listen(8088, function () {
       console.log(new Date().getHours()+'点获取书籍成功')
     }
   },1000*60*60*1);
-   console.log('hello world !');
+
+    console.log('hello world !',server);
 })
 
 
