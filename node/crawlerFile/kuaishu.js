@@ -8,10 +8,8 @@ var async = require('async')
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
-  var urlencode = require('urlencode');
-var bodyParser = require('body-parser');
+var urlencode = require('urlencode');
 var url = require('url');
-
 var http = require('http')
 var iconv = require('iconv-lite');//解析编码,配合http使用:iconv+http
 
@@ -160,7 +158,7 @@ function openPage(name,response) {
       .charset('gbk')
       .end((err, res) => {
         if(err){
-          console.log('start error');
+          console.log('openPage error',err);
           return;
         }
         let $ = cheerio.load(res.text);
@@ -171,19 +169,16 @@ function openPage(name,response) {
   });
 }
 //搜索
-
-
-
 function search({hash,name,response}){
   return new Promise((resolve,reject)=>{
     var aaa=urlencode('三','gbk');
     superagent
       .post('https://www.shukuai.org/search.php')
-      .charset()
+      .charset('gbk')
       .query({mod:'forum'})
       .send({
          formhash:hash,
-         srchtxt:'\%c8\%fd',
+         srchtxt:aaa,//'\%c8\%fd',
          searchsubmit:'yes'
        })
       .type('form')
@@ -202,25 +197,70 @@ function search({hash,name,response}){
       .set('Cookie',cookieTest)
       .end((err, res) => {
         if(err){
-          console.log('start error',err);
+          console.log('search error',err);
           return;
         }
-        var arr=[]
-        let $ = cheerio.load(res.text);
-         console.log(res);
-         $('.xs3 a').each(function () {
-           arr.push({
-             name: $(this).text(),
-             href:$(this).attr('href')
-           })
-         });
-         resolve();
-         response.end(JSON.stringify(arr));
-
+        var searchid=res.redirects[0].match(/searchid=\d+/gi)[0].split('=')[1];
+        console.log(searchid);
+        searchid=parseInt(searchid)+1;
+        console.log(searchid);
+        resolve({aaa,response,searchid})
       })
   });
 }
 
+function searchAgain({aaa,response,searchid}){
+  console.log(aaa,searchid);
+  return new Promise((resolve,reject)=>{
+    req
+      .get('https://www.shukuai.org/search.php')
+      .charset('gbk')
+      .set({
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Connection': 'keep-alive',
+        'Host': 'www.shukuai.org',
+        'Origin': 'https://www.shukuai.org',
+        'Referer': 'https://www.shukuai.org/search.php',
+        'Upgrade-Insecure-Requests': 1,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
+      })
+      .set('Cookie', cookieTest)
+      .query({
+        mod:'forum',
+        searchid:searchid,
+        orderby:'lastpost',
+        ascdesc:'desc',
+        searchsubmit:'yes',
+        kw:aaa
+      })
+      .end((err, res) => {
+        if (err) {
+          console.log('loveBook error');
+          return;
+        }
+        var arr=[]
+        let $ = cheerio.load(res.text);
+
+        $('.xs3 a').each(function () {
+          arr.push({
+            name: $(this).text(),
+            href:$(this).attr('href')
+          })
+        });
+        console.log(arr);
+        // response.end(JSON.stringify(arr));
+        resolve();
+      })
+  })
+}
+
+
+
+
+openPage(null,null)
+  .then(search).then(searchAgain)
 
 //登录页
 function  start(pMsg) {
