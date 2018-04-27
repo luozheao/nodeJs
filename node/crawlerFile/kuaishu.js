@@ -49,6 +49,10 @@ app.use(express.static('static'))
 app.use(express.static('build'))
 app.use(express.static('dist'))
 
+app.all("*", function(request, response, next) {
+  bookPath=request.hostname.includes(127)? "../books/":"./node/books/";
+  next();
+});
 
 app.get('/api/download', function (req, res) {
   var name=req.query.name;
@@ -102,7 +106,7 @@ function getSaveBooksName(res,req) {
   var saveBooks=[];
   console.log(req.hostname)
 
-  fs.readdir(path, function(err,files){
+  fs.readdir(bookPath, function(err,files){
     if(err){
       console.log("文件不存在",err);
       return;
@@ -508,19 +512,17 @@ function saveBook(result){
 
 
 var server = app.listen(8088, function () {
-
    setInterval(()=>{
      toSign();//每隔24小时签到一次
      console.log(new Date().getHours()+'点签到成功')
    },1000*60*60*12);
-  setInterval(()=>{
+   setInterval(()=>{
     if(new Date().getHours()==17){
       toGetTodayLoveBook();//每隔1小时获取书籍
       console.log(new Date().getHours()+'点获取书籍成功')
     }
   },1000*60*60*1);
-
-    console.log('hello world !',server);
+    console.log('hello world !');
 })
 
 
