@@ -49,7 +49,6 @@ app.use(express.static('build'))
 app.use(express.static('dist'))
 
 
-
 app.get('/api/download', function (req, res) {
   var name=req.query.name;
   res.set({
@@ -144,7 +143,6 @@ function toGetTodayLoveBook(res) {
 }
 app.post('/api/searchValue',urlencodedParser,function (req,response) {
   var  name=req.body.name;
-
   openPage(name,response)
     .then(search)
 
@@ -171,14 +169,13 @@ function openPage(name,response) {
 //搜索
 function search({hash,name,response}){
   return new Promise((resolve,reject)=>{
-    var aaa=urlencode('三','gbk');
+    var aaa=urlencode(name,'gbk');
     superagent
       .post('https://www.shukuai.org/search.php')
       .charset('gbk')
-      .query({mod:'forum'})
+      .query('mod=forum&srchtxt='+aaa)
       .send({
          formhash:hash,
-         srchtxt:aaa,//'\%c8\%fd',
          searchsubmit:'yes'
        })
       .type('form')
@@ -200,49 +197,9 @@ function search({hash,name,response}){
           console.log('search error',err);
           return;
         }
-        var searchid=res.redirects[0].match(/searchid=\d+/gi)[0].split('=')[1];
-        console.log(searchid);
-        searchid=parseInt(searchid)+1;
-        console.log(searchid);
-        resolve({aaa,response,searchid})
-      })
-  });
-}
-
-function searchAgain({aaa,response,searchid}){
-  console.log(aaa,searchid);
-  return new Promise((resolve,reject)=>{
-    req
-      .get('https://www.shukuai.org/search.php')
-      .charset('gbk')
-      .set({
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Connection': 'keep-alive',
-        'Host': 'www.shukuai.org',
-        'Origin': 'https://www.shukuai.org',
-        'Referer': 'https://www.shukuai.org/search.php',
-        'Upgrade-Insecure-Requests': 1,
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36',
-      })
-      .set('Cookie', cookieTest)
-      .query({
-        mod:'forum',
-        searchid:searchid,
-        orderby:'lastpost',
-        ascdesc:'desc',
-        searchsubmit:'yes',
-        kw:aaa
-      })
-      .end((err, res) => {
-        if (err) {
-          console.log('loveBook error');
-          return;
-        }
         var arr=[]
         let $ = cheerio.load(res.text);
-
+        console.log(res.redirects);
         $('.xs3 a').each(function () {
           arr.push({
             name: $(this).text(),
@@ -250,17 +207,17 @@ function searchAgain({aaa,response,searchid}){
           })
         });
         console.log(arr);
-        // response.end(JSON.stringify(arr));
+        if(response){
+          response.end(JSON.stringify(arr));
+        }
         resolve();
       })
-  })
+  });
 }
 
 
-
-
-openPage(null,null)
-  .then(search).then(searchAgain)
+// openPage(null,null)
+//   .then(search)
 
 //登录页
 function  start(pMsg) {
