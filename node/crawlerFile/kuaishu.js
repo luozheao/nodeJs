@@ -511,7 +511,7 @@ var server = app.listen(8088, function () {
      console.log(new Date().getHours()+'点签到成功')
    },1000*60*60*12);
   setInterval(()=>{
-    if(new Date().getHours()==12){
+    if(new Date().getHours()==17){
       toGetTodayLoveBook();//每隔1小时获取书籍
       console.log(new Date().getHours()+'点获取书籍成功')
     }
