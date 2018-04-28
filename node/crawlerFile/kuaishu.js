@@ -233,6 +233,7 @@ function search({hash,name,response}){
         let $ = cheerio.load(res.text);
         console.log(res.redirects);
         $('.xs3 a').each(function () {
+          var name=$(this).text();
           if(name.includes('作者')){
             arr.push({
               name: name,
