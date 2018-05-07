@@ -44,6 +44,7 @@ let msgArr=[
   } ,
 ]
 let signMsg=[];
+let cookieTest;
 
 app.use(express.static('static'))
 app.use(express.static('build'))
@@ -179,7 +180,7 @@ app.post('/api/searchValue',urlencodedParser,function (req,response) {
     .then(search)
 
 })
-let cookieTest;
+
 //打开页面
 function openPage(name,response) {
   return new Promise((resolve,reject)=>{
@@ -249,7 +250,6 @@ function search({hash,name,response}){
       })
   });
 }
-
 
 //登录页
 function  start(pMsg) {
@@ -569,7 +569,7 @@ function saveBook(result){
   if(!fs.existsSync(bookPath)){
     fs.mkdirSync(bookPath);
   }
-  result.forEach(function (item) {
+   result.forEach(function (item) {
     //不知道怎么解压
     request(item.realDownLink)
       .pipe(fs.createWriteStream(bookPath+item.name+'.rar'));
