@@ -24,23 +24,23 @@ var imagePath = './qmImages/'
 // setSumPage(20,25);
 
 //控制爬取页数
-function setSumPage(start,end) {
-  var arr= [...Array(end)].map((p,index)=>index+1).slice(start-1);
+function setSumPage(start, end) {
+  var arr = [...Array(end)].map((p, index) => index + 1).slice(start - 1);
   async.mapLimit(arr, 30, function (num, sumCallback) {
-       getImagePageUrl(num)
+    getImagePageUrl(num)
       .then(getImage)
       .then(saveImage)
       .then(function () {
-         sumCallback(null,'');
+        sumCallback(null, '');
       })
   }, function (err, result) {
-      console.log('全部爬取完成');
+    console.log('全部爬取完成');
   });
 }
 
 //获取图片所在页面的链接
 function getImagePageUrl(pageNum) {
-  return new Promise(function (resolve,reject) {
+  return new Promise(function (resolve, reject) {
     req
       .get(pageUrl + pageNum)
       .charset('utf-8')
@@ -57,7 +57,7 @@ function getImagePageUrl(pageNum) {
             imageUrl: $(this).attr('href')
           })
         })
-             resolve(imagesArr);
+        resolve(imagesArr);
       })
   })
 
@@ -66,8 +66,8 @@ function getImagePageUrl(pageNum) {
 
 //获取页面里面的图片
 function getImage(result) {
-  return new Promise(function (resolve,reject) {
-    async.mapLimit(result,30, function (item, callback) {
+  return new Promise(function (resolve, reject) {
+    async.mapLimit(result, 30, function (item, callback) {
       req
         .get(mainUrl + item.imageUrl)
         .charset('utf-8')
@@ -96,28 +96,28 @@ function getImage(result) {
 
 //保存图片
 function saveImage(result) {
-  return new Promise(function (resolve,reject) {
+  return new Promise(function (resolve, reject) {
     // if (!fs.existsSync(imagePath)) {
     //   fs.mkdirSync(imagePath);
     // }
     console.log('开始抓取图片')
     async.mapLimit(result, 2, function (arr, callback1) {
       async.mapLimit(arr, 5, function (item, callback2) {
-        if(item.imgUrl){
+        if (item.imgUrl) {
           var url = mainUrl + item.imgUrl.replace('nothumb', 'noupdate')
           request(url)
-            .pipe(fs.createWriteStream(imagePath + item.imageName.replace('/','_') + '_' + item.imgName))
-            .on('close',function(){
+            .pipe(fs.createWriteStream(imagePath + item.imageName.replace('/', '_') + '_' + item.imgName))
+            .on('close', function () {
               console.log('保存一张图片')
-              callback2(null,"");
+              callback2(null, "");
 
             });
-        }else{
+        } else {
           console.log(item)
         }
       }, function (err, result) {
         console.log('保存一组图片')
-        callback1(null,"");
+        callback1(null, "");
       });
     }, function (err, result) {
       resolve();
@@ -130,18 +130,32 @@ var server = app.listen(8089, function () {
   console.log('hello world !');
 })
 
-/**
- * 获取文件信息
- * */
-// fs.stat(imagePath+'_haha.jpg', function(err, stats){
-//   if(err){
-//     throw err;
-//   }else{
-//     console.log(stats);
-//   }
-// })
-/**
- * 读取目录
- * */
-// fs.readdir(bookPath, function(err,files){});
 
+/**
+ * 读取文件夹中所有图片,并获取较小图片的名称
+ * **/
+function getLitterImagesName(size) {
+  return new Promise(function(resolve,reject){
+    fs.readdir(imagePath, function (err, files) {
+      async.mapLimit(files, 30, function (imageName, callbackTest) {
+        fs.stat(imagePath + imageName, function (err, stats) {
+          let sizeVal=stats.size/1024;
+          if(sizeVal<=size){
+            callbackTest(null,imageName);
+          }else{
+            callbackTest(null,null);
+          }
+        })
+      }, function (err, result) {
+        let arr=  result.filter(function (item) {
+          return item!=null;
+        });
+         resolve(arr);
+      });
+    });
+  });
+
+}
+getLitterImagesName(27).then(function(arr){
+  console.log(arr);
+});
