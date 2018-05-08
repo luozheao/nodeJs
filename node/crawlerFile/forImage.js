@@ -7,6 +7,7 @@ var request = require('request');
 var async = require('async')
 var fs = require('fs');
 var bodyParser = require('body-parser');
+var connection=require('./sql.js');
 var urlencodedParser = bodyParser.urlencoded({extended: false})
 var urlencode = require('urlencode');
 var url = require('url');
@@ -20,27 +21,32 @@ var iconv = require('iconv-lite');//解析编码,配合http使用:iconv+http
 var mainUrl = 'http://bbs.weibenkeji.com/';
 var pageUrl = mainUrl + "forum.php?mod=forumdisplay&fid=2&page=";
 var imagePath = './qmImages/'
+var  syncPage=2;//同时执行n页
+var  syncArticle=5;//同时执行n主题
+var  syncImg=5;//同时拿n图片
 
-// setSumPage(20,25);
+
+setSumPage(1, 50);
 
 //控制爬取页数
-function setSumPage(start,end) {
-  var arr= [...Array(end)].map((p,index)=>index+1).slice(start-1);
-  async.mapLimit(arr, 30, function (num, sumCallback) {
-       getImagePageUrl(num)
+function setSumPage(start, end) {
+  var arr = [...Array(end)].map((p, index) => index + 1).slice(start - 1);
+  async.mapLimit(arr, syncPage, function (num, sumCallback) {
+    getImagePageUrl(num)
       .then(getImage)
       .then(saveImage)
-      .then(function () {
-         sumCallback(null,'');
+      .then(function (result) {
+          sumCallback(null, result);
       })
   }, function (err, result) {
-      console.log('全部爬取完成');
+    console.log('全部爬取完成');
+    sqlInsert(result,null);
   });
 }
 
 //获取图片所在页面的链接
 function getImagePageUrl(pageNum) {
-  return new Promise(function (resolve,reject) {
+  return new Promise(function (resolve, reject) {
     req
       .get(pageUrl + pageNum)
       .charset('utf-8')
@@ -57,7 +63,7 @@ function getImagePageUrl(pageNum) {
             imageUrl: $(this).attr('href')
           })
         })
-             resolve(imagesArr);
+        resolve(imagesArr);
       })
   })
 
@@ -66,8 +72,8 @@ function getImagePageUrl(pageNum) {
 
 //获取页面里面的图片
 function getImage(result) {
-  return new Promise(function (resolve,reject) {
-    async.mapLimit(result,30, function (item, callback) {
+  return new Promise(function (resolve, reject) {
+    async.mapLimit(result, syncArticle, function (item, callback) {
       req
         .get(mainUrl + item.imageUrl)
         .charset('utf-8')
@@ -96,33 +102,61 @@ function getImage(result) {
 
 //保存图片
 function saveImage(result) {
-  return new Promise(function (resolve,reject) {
-    // if (!fs.existsSync(imagePath)) {
-    //   fs.mkdirSync(imagePath);
-    // }
-    console.log('开始抓取图片')
-    async.mapLimit(result, 2, function (arr, callback1) {
-      async.mapLimit(arr, 5, function (item, callback2) {
-        if(item.imgUrl){
-          var url = mainUrl + item.imgUrl.replace('nothumb', 'noupdate')
-          request(url)
-            .pipe(fs.createWriteStream(imagePath + item.imageName.replace('/','_') + '_' + item.imgName))
-            .on('close',function(){
-              console.log('保存一张图片')
-              callback2(null,"");
+  return new Promise(function(resolve,reject){
+    resolve(result);
+  });
 
-            });
-        }else{
-          console.log(item)
-        }
-      }, function (err, result) {
-        console.log('保存一组图片')
-        callback1(null,"");
-      });
-    }, function (err, result) {
-      resolve();
-    });
-  })
+  // return new Promise(function (resolve, reject) {
+  //   if (!fs.existsSync(imagePath)) {
+  //     fs.mkdirSync(imagePath);
+  //   }
+  //   console.log('开始抓取图片')
+  //
+  //   async.mapLimit(result, syncArticle, function (arr, callback1) {
+  //     async.mapLimit(arr, syncImg, function (item, callback2) {
+  //       if(item.imgUrl){
+  //         var url = mainUrl + item.imgUrl.replace('nothumb', 'noupdate')
+  //         request(url)
+  //           .pipe(fs.createWriteStream(imagePath + item.imageName.replace('/','_') + '_' + item.imgName))
+  //           .on('close',function(){
+  //             console.log('保存一张图片')
+  //             callback2(null,"");
+  //           });
+  //       }else{
+  //         console.log(item)
+  //       }
+  //     }, function (err, result) {
+  //       console.log('保存一组图片')
+  //       callback1(null,"");
+  //     });
+  //   }, function (err, result) {
+  //     resolve();
+  //   });
+  // })
+}
+
+//保存图片信息到数据库
+function sqlInsert(result,testArr) {
+  function changeData(resultSum){
+    var arr=[];
+    resultSum.forEach(function (result) {
+      result.forEach(function (item) {
+        item.forEach(function (p) {
+          arr.push([p.imageName,p.imgName,p.imgUrl])
+        })
+      })
+    })
+    return arr;
+  }
+  var selectSql = 'insert into imageMsg(imageName,imgName,imgUrl) values ?';
+  var params=result?changeData(result):testArr;
+  connection.query(selectSql,[params],function (err, result) {
+    if(err){
+      console.log(err.message);
+      return;
+    }
+    console.log(result);
+  });
 }
 
 
@@ -130,9 +164,9 @@ var server = app.listen(8089, function () {
   console.log('hello world !');
 })
 
-/**
- * 获取文件信息
- * */
+  /**
+   * 获取文件信息
+   * */
 // fs.stat(imagePath+'_haha.jpg', function(err, stats){
 //   if(err){
 //     throw err;
@@ -140,8 +174,17 @@ var server = app.listen(8089, function () {
 //     console.log(stats);
 //   }
 // })
-/**
- * 读取目录
- * */
+  /**
+   * 读取目录
+   * */
 // fs.readdir(bookPath, function(err,files){});
+
+
+
+
+
+
+
+
+
 
