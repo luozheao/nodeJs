@@ -26,7 +26,7 @@ var  syncArticle=5;//同时执行n主题
 var  syncImg=5;//同时拿n图片
 
 
-setSumPage(1, 50);
+// setSumPage(1, 50);
 
 //控制爬取页数
 function setSumPage(start, end) {
