@@ -164,27 +164,32 @@ var server = app.listen(8089, function () {
   console.log('hello world !');
 })
 
-  /**
-   * 获取文件信息
-   * */
-// fs.stat(imagePath+'_haha.jpg', function(err, stats){
-//   if(err){
-//     throw err;
-//   }else{
-//     console.log(stats);
-//   }
-// })
-  /**
-   * 读取目录
-   * */
-// fs.readdir(bookPath, function(err,files){});
 
+/**
+ * 读取文件夹中所有图片,并获取较小图片的名称
+ * **/
+function getLitterImagesName(size) {
+  return new Promise(function(resolve,reject){
+    fs.readdir(imagePath, function (err, files) {
+      async.mapLimit(files, 30, function (imageName, callbackTest) {
+        fs.stat(imagePath + imageName, function (err, stats) {
+          let sizeVal=stats.size/1024;
+          if(sizeVal<=size){
+            callbackTest(null,imageName);
+          }else{
+            callbackTest(null,null);
+          }
+        })
+      }, function (err, result) {
+        let arr=  result.filter(function (item) {
+          return item!=null;
+        });
+         resolve(arr);
+      });
+    });
+  });
 
-
-
-
-
-
-
-
-
+}
+getLitterImagesName(27).then(function(arr){
+  console.log(arr);
+});
