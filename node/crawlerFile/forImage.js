@@ -26,7 +26,7 @@ var  syncArticle=5;//同时执行n主题
 var  syncImg=5;//同时拿n图片
 
 
-// setSumPage(1, 50);
+ setSumPage(4, 4);
 
 //控制爬取页数
 function setSumPage(start, end) {
@@ -46,6 +46,7 @@ function setSumPage(start, end) {
 
 //获取图片所在页面的链接
 function getImagePageUrl(pageNum) {
+  console.log(pageUrl + pageNum);
   return new Promise(function (resolve, reject) {
     req
       .get(pageUrl + pageNum)
@@ -190,6 +191,6 @@ function getLitterImagesName(size) {
   });
 
 }
-getLitterImagesName(27).then(function(arr){
-  console.log(arr);
-});
+// getLitterImagesName(27).then(function(arr){
+//   console.log(arr);
+// });
