@@ -26,7 +26,7 @@ var  syncArticle=5;//同时执行n主题
 var  syncImg=5;//同时拿n图片
 
 
- setSumPage(4, 4);
+  // setSumPage(1, 1);
 
 //控制爬取页数
 function setSumPage(start, end) {
@@ -46,7 +46,6 @@ function setSumPage(start, end) {
 
 //获取图片所在页面的链接
 function getImagePageUrl(pageNum) {
-  console.log(pageUrl + pageNum);
   return new Promise(function (resolve, reject) {
     req
       .get(pageUrl + pageNum)
@@ -161,13 +160,35 @@ function sqlInsert(result,testArr) {
 }
 
 
+//查询图片的下载链接
+function selSelectImgUrl() {
+  // var selectSql = 'SELECT * FROM  (\n' +
+  //   'select id ,imageName ,imgName,imgUrl ,GROUP_CONCAT(imageName,imgName) as mergeName from imagemsg GROUP BY id\n' +
+  //   ') as a\n' +
+  //   'WHERE mergeName in (?); ';
+
+  // var selectSql='SELECT * FROM imagemsg\n' +
+  //   'WHERE (imageName,imgName) in (?)'
+
+  var params=[['广州-天河车陂-小姐姐','222417ztoj6mm286osdt66.jpg']];
+  connection.query(selectSql,[params],function (err, result) {
+    if(err){
+      console.log(err.message);
+      return;
+    }
+    console.log(result);
+  });
+}
+
 var server = app.listen(8089, function () {
   console.log('hello world !');
 })
 
-
+selSelectImgUrl();
 /**
  * 读取文件夹中所有图片,并获取较小图片的名称
+ * 1.将名字拆开,并查询,用结果来重新下载
+ * 2.数据库里面应该进行去重操作
  * **/
 function getLitterImagesName(size) {
   return new Promise(function(resolve,reject){
@@ -194,3 +215,5 @@ function getLitterImagesName(size) {
 // getLitterImagesName(27).then(function(arr){
 //   console.log(arr);
 // });
+
+
