@@ -80,7 +80,7 @@ app.get('/api/searchDownload', function (req, res) {
   //获取下载链接
   var href= req.url.split('name=')[1];
   //获取真实下载链接
-  var index=(new Date().getDate())%5;
+  var index=(new Date().getDate())%4;
   async.mapLimit([msgArr[index]],1, function (p, callback) {
       start(p)
         .then(login)
@@ -97,7 +97,7 @@ app.get('/api/searchDownload', function (req, res) {
     function (err, items) {
       //下载
        console.log(items,1234)
-       request(items[0][0].realDownLink)
+      req.get(items[0][0].realDownLink)
           .pipe(res)
     });
 })
@@ -571,11 +571,12 @@ function saveBook(result){
   }
    result.forEach(function (item) {
     //不知道怎么解压
-    request(item.realDownLink)
-      .pipe(fs.createWriteStream(bookPath+item.name+'.rar'));
+    req.get(item.realDownLink)
+      .pipe(fs.createWriteStream(bookPath+item.name+'.rar')).on('close',function(){
+         console.log(item.name,'下载成功');
+    });
   })
 }
-
 
 var server = app.listen(8088, function () {
    setInterval(()=>{
@@ -592,3 +593,4 @@ var server = app.listen(8088, function () {
 })
 
 
+toGetTodayLoveBook();//每隔1小时获取书籍
