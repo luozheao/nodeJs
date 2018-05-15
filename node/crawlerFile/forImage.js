@@ -161,22 +161,22 @@ function sqlInsert(result,testArr) {
 
 
 //查询图片的下载链接
-function selSelectImgUrl() {
-  // var selectSql = 'SELECT * FROM  (\n' +
-  //   'select id ,imageName ,imgName,imgUrl ,GROUP_CONCAT(imageName,imgName) as mergeName from imagemsg GROUP BY id\n' +
-  //   ') as a\n' +
-  //   'WHERE mergeName in (?); ';
+function selSelectImgUrl(arr) {
+  var selectSql = 'SELECT * FROM  (\n' +
+    'select id ,imageName ,imgName,imgUrl ,GROUP_CONCAT(imageName,"_",imgName) as mergeName from imagemsg GROUP BY id\n' +
+    ') as a\n' +
+    'WHERE mergeName in (?); ';
 
   // var selectSql='SELECT * FROM imagemsg\n' +
   //   'WHERE (imageName,imgName) in (?)'
 
-  var params=[['广州-天河车陂-小姐姐','222417ztoj6mm286osdt66.jpg']];
+  var params=arr?arr:['bg_123.jpg','广州-天河-奶牛_psb (4).jpg'];
   connection.query(selectSql,[params],function (err, result) {
     if(err){
       console.log(err.message);
       return;
     }
-    console.log(result);
+    console.log(result[0].imgUrl);
   });
 }
 
@@ -184,7 +184,7 @@ var server = app.listen(8089, function () {
   console.log('hello world !');
 })
 
-selSelectImgUrl();
+
 /**
  * 读取文件夹中所有图片,并获取较小图片的名称
  * 1.将名字拆开,并查询,用结果来重新下载
@@ -210,10 +210,9 @@ function getLitterImagesName(size) {
       });
     });
   });
-
 }
-// getLitterImagesName(27).then(function(arr){
-//   console.log(arr);
-// });
+getLitterImagesName(428).then(function(arr){
+  selSelectImgUrl(arr);
+});
 
 
