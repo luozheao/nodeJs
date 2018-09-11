@@ -159,10 +159,10 @@
 
     },
     mounted() {
-     this.$api.get('/api/test', "", response => {
+      this.$api.get('/api/test', "", response => {
            console.log(response)
       });
-
+    
     },
     beforeRouteEnter(to, from, next) {
 
