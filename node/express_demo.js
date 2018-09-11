@@ -1,9 +1,9 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var connection=require('./sql.js');
-var crawler=require('./crawlerFile/crawler.js');
-var crawler2=require('./crawlerFile/crawler2.js');
+// var connection=require('./sql.js');
+// var crawler=require('./crawlerFile/crawler.js');
+// var crawler2=require('./crawlerFile/crawler2.js');
 // 创建 application/x-www-form-urlencoded 编码解析
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -16,8 +16,14 @@ app.get('/',function (req,res) {
 })
 
 app.get('/api/login', function (req, res) {
-
+   
 });
+
+
+
+app.get('/api/test',function (req,res) {
+  res.end(JSON.stringify({a:1,b:'hello world !'}))
+})
 
 /**
  * 搜索
@@ -73,4 +79,4 @@ var server = app.listen(8088, function () {
 })
 
 
-crawler2(); //运行主函数
+// crawler2(); //运行主函数
